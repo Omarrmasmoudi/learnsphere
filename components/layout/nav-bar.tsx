@@ -7,7 +7,7 @@ export function NavBar() {
       <nav className="container flex items-center justify-between h-16 px-4 mx-auto">
         <Link href="/" className="flex items-center gap-2">
           <img 
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Capture%20d'%C3%A9cran%202025-01-14%20171022-pcxTPKmIWt36as0c672dj33QmXrUT8.png" 
+            src="/logo.png" 
             alt="LearnSphere Logo" 
             className="w-8 h-8"
           />
@@ -21,7 +21,7 @@ export function NavBar() {
           <Link href="/courses" className="text-gray-300 hover:text-white transition-colors">
             Courses
           </Link>
-          <Link href="#about" className="text-gray-300 hover:text-white transition-colors">
+          <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
             About Us
           </Link>
         </div>

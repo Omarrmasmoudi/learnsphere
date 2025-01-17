@@ -1,7 +1,7 @@
-import { NavBar } from '@/components/nav-bar'
-import { CourseCard } from '@/components/course-card'
-import { CourseFilters } from '@/components/course-filters'
-import { courses } from '@/data/courses'
+import { NavBar } from '@/components/layout/nav-bar'
+import { CourseCard } from '@/components/courses/course-card'
+import { CourseFilters } from '@/components/courses/course-filters'
+import { courses } from '@/lib/data/courses'
 
 export default function CoursesPage() {
   return (

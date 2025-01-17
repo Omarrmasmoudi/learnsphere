@@ -2,21 +2,32 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Eye, EyeOff, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { SphereBackground } from '../../components/sphere-background'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(139,92,246,0.05)_25%,rgba(139,92,246,0.05)_50%,transparent_50%,transparent_75%,rgba(139,92,246,0.05)_75%)] bg-[length:24px_24px]" />
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <SphereBackground />
       
-      <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
+      <Card className="w-full max-w-md bg-black/40 backdrop-blur-xl border-purple-500/20">
+        <CardHeader className="space-y-1 text-center relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2 text-gray-400 hover:text-white"
+            onClick={() => router.push('/')}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <CardTitle className="text-2xl text-white">Welcome Back</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -74,7 +85,6 @@ export default function LoginPage() {
               Create one
             </Link>
           </div>
-
           <p className="text-center text-xs text-gray-500">
             I accept LearnSphere&apos;s Terms of Use and Privacy Notice.
           </p>

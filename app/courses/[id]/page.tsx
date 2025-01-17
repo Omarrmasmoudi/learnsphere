@@ -2,11 +2,11 @@
 
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { NavBar } from '@/components/nav-bar'
+import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Clock, GraduationCap, Languages, Medal, PlayCircle, User } from 'lucide-react'
-import { courses } from '@/data/courses'
+import { courses } from '@/lib/data/courses'
 
 export default function CourseDetailsPage() {
   const params = useParams()

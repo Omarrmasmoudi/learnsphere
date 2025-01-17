@@ -1,9 +1,9 @@
-import { NavBar } from '@/components/nav-bar'
-import { HeroSection } from '@/components/hero-section'
-import { FeaturesSection } from '@/components/features-section'
-import { Testimonials } from '@/components/testimonials'
-import { Newsletter } from '@/components/newsletter'
-import { Footer } from '@/components/footer'
+import { NavBar } from '@/components/layout/nav-bar'
+import { HeroSection } from '@/components/home/hero-section'
+import { FeaturesSection } from '@/components/home/features-section'
+import { Testimonials } from '@/components/home/testimonials'
+import { Newsletter } from '@/components/home/newsletter'
+import { Footer } from '@/components/layout/footer'
 
 export default function Home() {
   return (
