@@ -12,10 +12,43 @@ import { SphereBackground } from '../../components/sphere-background'
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isCardVisible, setIsCardVisible] = useState(true)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const router = useRouter()
 
   const handleClose = () => {
     router.push('/')
+  }
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess('Registration successful!')
+        // Optionally redirect to login page or home page
+        router.push('/login')
+      } else {
+        setError(data.error)
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.')
+    }
   }
 
   return (
@@ -35,75 +68,52 @@ export default function SignUpPage() {
             <CardTitle className="text-2xl">Sign Up</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="text"
-                placeholder="Enter your full name"
-                className="bg-white"
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-white"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="relative">
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-2">
                 <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="bg-white pr-10"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-white"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
               </div>
-            </div>
-            
-            <Button className="w-full bg-purple-600 hover:bg-purple-500">
-              Sign Up
-            </Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+              <div className="space-y-2">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white"
+                />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">or</span>
+              <div className="space-y-2">
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-white pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Button variant="outline" className="w-full">
-                <img src="/placeholder.svg?height=24&width=24" className="mr-2 h-4 w-4" />
-                Continue With Google
+              <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-500 transition-colors">
+                Sign Up
               </Button>
-              <Button variant="outline" className="w-full">
-                <img src="/placeholder.svg?height=24&width=24" className="mr-2 h-4 w-4" />
-                Continue With Facebook
-              </Button>
-            </div>
-
-            <div className="text-center text-sm">
-              Already have an account?{' '}
-              <Link href="/login" className="text-purple-600 hover:text-purple-500">
-                Login
-              </Link>
-            </div>
-            <Button className="text-center text-xs text-gray-500">b</Button>
-            <p className="text-center text-xs text-gray-500">
-              I accept LearnSphere&apos;s Terms of Use and Privacy Notice.
-            </p>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+              {success && <p className="text-green-500 mt-2">{success}</p>}
+            </form>
           </CardContent>
         </Card>
       )}
     </div>
   )
 }
-

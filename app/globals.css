@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply bg-black;
+  }
+}
+
+@layer components {
+  .layout-container {
+    @apply flex min-h-[calc(100vh-4rem)];
+  }
+  
+  .sidebar {
+    @apply w-1/4 min-w-[250px] border-r border-purple-500/20 bg-black;
+  }
+  
+  .main-content {
+    @apply w-3/4 p-8;
+  }
+  
+  .course-grid {
+    @apply grid grid-cols-1 xl:grid-cols-2 gap-8;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
 /* Custom scrollbar styles */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
@@ -19,4 +49,3 @@
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: rgba(139, 92, 246, 0.4);
 }
-

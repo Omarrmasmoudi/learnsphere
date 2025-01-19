@@ -1,8 +1,8 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import type { Course } from '@/lib/types/course'
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import type { Course } from '@/lib/types/course';
 
 interface CourseCardProps {
   course: Course

@@ -11,7 +11,41 @@ import { SphereBackground } from '../../components/sphere-background'
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const router = useRouter()
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setSuccess('')
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSuccess('Login successful!')
+        // Store token in localStorage or context
+        localStorage.setItem('token', data.token)
+        // Optionally redirect to home page or dashboard
+        router.push('/')
+      } else {
+        setError(data.error)
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.')
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -30,34 +64,42 @@ export default function LoginPage() {
           <CardTitle className="text-2xl text-white">Welcome Back</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              className="bg-white"
-            />
-          </div>
-          <div className="space-y-2">
-            <div className="relative">
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-2">
               <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                className="bg-white pr-10"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-white"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
             </div>
-            <p className="text-xs text-gray-500">Between 8 and 72 characters</p>
-          </div>
-          
-          <Button className="w-full bg-purple-600 hover:bg-purple-500">
-            Log In
-          </Button>
+            <div className="space-y-2">
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-white pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500">Between 8 and 72 characters</p>
+            </div>
+            
+            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-500">
+              Log In
+            </Button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {success && <p className="text-green-500 mt-2">{success}</p>}
+          </form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -93,4 +135,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

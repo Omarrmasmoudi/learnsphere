@@ -1,30 +1,40 @@
 datasource db {
   provider = "postgresql"
-  url      = env("postgresql://postgres:11190826ISGIS@localhost:1234/test
-")
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-
 model User {
-
-  id       Int    @id @default(autoincrement())
-
-  email    String @unique
-
-  name     String
-
-  password String
-
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  name        String
+  password    String
+  enrollments Enrollment[]
 }
 
-
 model Course {
-  id          String    @id @default(uuid())
+  id          String       @id @default(uuid())
   title       String
   description String
+  instructor  String
   price       Int
+  image       String?
+  category    String?
+  duration    String?
+  level       String?
+  priceRange  String?     @default("$40-$100")
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  courseId  String
+  user      User   @relation(fields: [userId], references: [id])
+  course    Course @relation(fields: [courseId], references: [id])
 }
