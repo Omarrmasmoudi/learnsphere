@@ -15,8 +15,8 @@ export function NavBar() {
         </Link>
         
         <div className="hidden md:flex items-center gap-8">
-          <Link href="#features" className="text-gray-300 hover:text-white transition-colors">
-            Features
+          <Link href="/teacher" className="text-gray-300 hover:text-white transition-colors">
+            Teacher
           </Link>
           <Link href="/courses" className="text-gray-300 hover:text-white transition-colors">
             Courses

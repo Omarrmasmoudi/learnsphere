@@ -8,33 +8,59 @@ generator client {
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
-  email       String       @unique
-  name        String
-  password    String
-  enrollments Enrollment[]
+  id             Int          @id @default(autoincrement())
+  email          String       @unique
+  name           String
+  password       String
+  createdCourses Course[]     @relation("createdCourses")
+  enrollments    Enrollment[]
+  teacher        Teacher?
+  admin          Admin?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model Course {
-  id          String       @id @default(uuid())
-  title       String
-  description String
-  instructor  String
-  price       Int
-  image       String?
-  category    String?
-  duration    String?
-  level       String?
-  priceRange  String?     @default("$40-$100")
-  enrollments Enrollment[]
+  id           String       @id @default(uuid())
+  title        String
+  description  String
+  instructorId Int
+  instructor   User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
+  price        Int
+  image        String?
+  video        String?
+  category     String?
+  duration     String?
+  level        String?
+  priceRange   String?      @default("$40-$100")
+  enrollments  Enrollment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@map("courses")
 }
 
 model Enrollment {
-  id        Int    @id @default(autoincrement())
-  userId    Int
-  courseId  String
-  user      User   @relation(fields: [userId], references: [id])
-  course    Course @relation(fields: [courseId], references: [id])
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  courseId    String
+  status      String    @default("IN_PROGRESS")
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model Teacher {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -1,4 +1,7 @@
 import { jwtVerify, SignJWT } from 'jose';
+import { cookies } from 'next/headers'
+import prisma from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 interface JWTPayload {
   userId: number;
@@ -40,5 +43,34 @@ export const verifyToken = async (token: string): Promise<JWTPayload | null> => 
   } catch (error) {
     console.error('Token verification failed:', error);
     return null;
+  }
+};
+export async function getCurrentUser() {
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get('token')?.value
+    
+    if (!token) return null
+    
+    // Verify the token
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWT_SECRET)
+    )
+    
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { id: Number(payload.sub) },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true
+      } as Prisma.UserSelect
+    })
+    
+    return user
+  } catch (error) {
+    return null
   }
 };
