@@ -2,8 +2,13 @@ import { CoursesNav } from '@/components/courses/courses-nav';
 import { CourseCard } from '@/components/courses/course-card';
 import { CourseFilters } from '@/components/courses/course-filters';
 import { courses } from '@/lib/data/courses';
+import { Course } from '@prisma/client';
+
+import { isValidCourse } from '@/lib/utils/validators';
 
 export default function CoursesPage() {
+  const validCourses = courses.filter(isValidCourse);
+
   return (
     <div className="min-h-screen bg-black">
       <CoursesNav />
@@ -25,7 +30,7 @@ export default function CoursesPage() {
                 Recommended For You
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {courses.slice(0, 4).map((course) => (
+                {validCourses.slice(0, 4).map((course) => (
                   <CourseCard key={course.id} course={course} />
                 ))}
               </div>
@@ -36,7 +41,7 @@ export default function CoursesPage() {
                 Most Popular Courses
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {courses.slice(4, 6).map((course) => (
+                {validCourses.slice(4, 6).map((course) => (
                   <CourseCard key={course.id} course={course} />
                 ))}
               </div>

@@ -2,43 +2,36 @@
 
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from './auth'
-import { revalidatePath } from 'next/cache'
+import type { Course } from '@prisma/client'
 
-export async function getTeacherCourses() {
+export async function getTeacherCourses(): Promise<Course[]> {
   const user = await getCurrentUser()
+  
   if (!user) {
-    throw new Error('Unauthorized')
+    return []
   }
 
-  // Check if the user is a teacher
-  const teacher = await prisma.teacher.findFirst({
-    where: {
-      userId: user.id
-    }
-  })
-
-  if (!teacher) {
-    throw new Error('User is not a teacher')
-  }
-
-  // Get all courses created by this teacher
-  const courses = await prisma.course.findMany({
+  return await prisma.course.findMany({
     where: {
       instructorId: user.id
     },
-    include: {
-      enrollments: {
-        select: {
-          _count: true
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      instructorId: true,
+      price: true,
+      image: true,
+      video: true,
+      category: true,
+      duration: true,
+      level: true,
+      published: true,
+      priceRange: true,
+      createdAt: true,
+      updatedAt: true
     }
   })
-
-  return courses
 }
 
 // Optional: Get a single course with detailed information

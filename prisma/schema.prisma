@@ -14,8 +14,8 @@ model User {
   password       String
   createdCourses Course[]     @relation("createdCourses")
   enrollments    Enrollment[]
-  teacher        Teacher?
-  admin          Admin?
+  teacher        Teacher?     @relation("UserTeacher")
+  admin          Admin?       @relation("UserAdmin")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 }
@@ -23,7 +23,7 @@ model User {
 model Course {
   id           String       @id @default(uuid())
   title        String
-  description  String
+  description  String?
   instructorId Int
   instructor   User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
   price        Int
@@ -33,6 +33,7 @@ model Course {
   duration     String?
   level        String?
   priceRange   String?      @default("$40-$100")
+  published    Boolean      @default(false)
   enrollments  Enrollment[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -56,11 +57,11 @@ model Enrollment {
 model Teacher {
   id     Int  @id @default(autoincrement())
   userId Int  @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation("UserTeacher", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admin {
   id     Int  @id @default(autoincrement())
   userId Int  @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation("UserAdmin", fields: [userId], references: [id], onDelete: Cascade)
 }

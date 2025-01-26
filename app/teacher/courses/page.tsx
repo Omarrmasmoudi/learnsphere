@@ -2,24 +2,25 @@ import { getCurrentUser } from '@/lib/action/auth'
 import { getTeacherCourses } from '@/lib/action/teacher-courses'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import type { Course } from '@prisma/client'
 
 // Main page component for teacher's courses
 export default async function TeacherCoursesPage() {
   const user = await getCurrentUser()
   
   if (!user) {
-    redirect('/login') // or wherever your login page is
+    redirect('/login') 
   }
 
-  // Optional: Check if user is a teacher
-  if (user.role !== 'TEACHER') {
-    redirect('/') // redirect non-teachers
-  }else{
-    redirect('/teacher/courses')
-  } 
+  // Check if user is a teacher
+  const role = user.teacher ? 'TEACHER' : user.admin ? 'ADMIN' : 'STUDENT';
 
-  // Fetch teacher's courses
-  const courses = await getTeacherCourses()
+  if (role !== 'TEACHER') {
+    redirect('/') // redirect non-teachers
+  }
+
+  // Now this is reachable
+  const courses: Course[] = await getTeacherCourses()
 
   return (
     // Main container with padding and margin

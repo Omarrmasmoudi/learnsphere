@@ -26,7 +26,7 @@ export function CourseCard({ course }: CourseCardProps) {
           <h3 className="font-semibold text-lg mb-2 text-white line-clamp-2">
             {course.title}
           </h3>
-          <p className="text-sm text-gray-400 mb-4">{course.instructor}</p>
+          <p className="text-sm text-gray-400 mb-4">Instructor ID: {course.instructorId}</p>
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold text-white">${course.price} USD</span>
           </div>

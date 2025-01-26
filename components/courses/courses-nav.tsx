@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input'
 
 export function CoursesNav() {
   return (
-    <header className="fixed top-0 w-full z-50 bg-white border-b">
+    <header className="fixed top-0 w-full z-50 bg-black/50 border-b">
       <nav className="container flex items-center justify-between h-16 px-4 mx-auto">
         <Link href="/" className="flex items-center gap-2">
           <img 
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Capture%20d'%C3%A9cran%202025-01-14%20171022-pcxTPKmIWt36as0c672dj33QmXrUT8.png" 
+            src="/logo.png" 
             alt="LearnSphere Logo" 
             className="w-8 h-8"
           />
