@@ -1,7 +1,6 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { Course } from '@/lib/types'
 import { revalidatePath } from 'next/cache'
 
 
@@ -14,36 +13,6 @@ export async function getCourses() {
   return response.json()
 }
 
-
-// Course detail page
-export async function getCourseById(id: string) {
-  try {
-    const course = await prisma.course.findUnique({
-      where: { id },
-      include: {
-        instructor: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        _count: {
-          select: { enrollments: true }
-        }
-      }
-    });
-
-    if (!course) {
-      throw new Error('Course not found');
-    }
-
-    return course;
-  } catch (error) {
-    console.error('Error fetching course:', error);
-    throw new Error('Failed to fetch course');
-  }
-}
 
 export async function enrollInCourse(courseId: string, userId: number) {
   try {
@@ -73,7 +42,6 @@ export async function enrollInCourse(courseId: string, userId: number) {
 
     // Revalidate course page
     revalidatePath(`/courses/${courseId}`);
-    
     return enrollment;
   } catch (error) {
     console.error('Error enrolling in course:', error);

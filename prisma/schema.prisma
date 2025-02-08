@@ -37,6 +37,7 @@ model Course {
   enrollments  Enrollment[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  sections     Section[]
 
   @@map("courses")
 }
@@ -64,4 +65,28 @@ model Admin {
   id     Int  @id @default(autoincrement())
   userId Int  @unique
   user   User @relation("UserAdmin", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Section {
+  id        Int      @id @default(autoincrement())
+  title     String
+  courseId  String   // Changed from Int to String to match Course.id
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  videos    Video[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sections")
+}
+
+model Video {
+  id        Int      @id @default(autoincrement())
+  title     String
+  url       String
+  sectionId Int
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("videos")
 }

@@ -9,6 +9,27 @@ interface JWTPayload {
   // Add other fields as needed
 }
 
+
+export const verifyJwt = async (token: string): Promise<JWTPayload | null> => {
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is not defined');
+    }
+
+    const encodedSecret = new TextEncoder().encode(secret);
+    const { payload } = await jwtVerify(token, encodedSecret, {
+      issuer: 'LearnSphere',
+      audience: 'LearnSphere',
+    });
+
+    return payload as JWTPayload;
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return null;
+  }
+};
+
 export const generateToken = async (payload: JWTPayload): Promise<string> => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -74,3 +95,4 @@ export async function getCurrentUser() {
     return null
   }
 };
+

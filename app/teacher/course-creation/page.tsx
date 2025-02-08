@@ -49,24 +49,35 @@ export default function CreateCoursePage() {
   const handleSubmit = async (isDraft: boolean = false) => {
     try {
       setIsLoading(true)
+      const token = localStorage.getItem('token')
       
-      const response = await fetch('/api/courses', {
+      if (!token) {
+        router.push('/login')
+        return
+      }
+  
+      const response = await fetch('/api/create-courses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           ...formData,
           published: !isDraft
         }),
       })
-
+  
       if (!response.ok) {
+        if (response.status === 401) {
+          router.push('/login')
+          return
+        }
         throw new Error('Failed to create course')
       }
-
+  
       const course = await response.json()
-      router.push(`/teacher/courses/${course.id}`)
+      router.push(`/courses/${course.id}`)
     } catch (error) {
       console.error('Error creating course:', error)
     } finally {

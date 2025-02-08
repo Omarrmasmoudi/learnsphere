@@ -6,11 +6,41 @@ import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Clock, GraduationCap, Languages, Medal, PlayCircle, User } from 'lucide-react'
-import { courses } from '@/lib/data/courses'
+import { useState, useEffect } from 'react'
+import { Course } from '@prisma/client'
 
 export default function CourseDetailsPage() {
   const params = useParams()
-  const course = courses.find(c => c.id === params.id)
+  const [course, setCourse] = useState<Course | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchCourse() {
+      try {
+        const response = await fetch(`/api/courses/${params.id}`)
+        if (!response.ok) throw new Error('Failed to fetch course')
+        const data = await response.json()
+        setCourse(data)
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCourse()
+  }, [params.id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black">
+        <NavBar />
+        <div className="pt-24 text-center text-white">
+          Loading...
+        </div>
+      </div>
+    )
+  }
 
   if (!course) {
     return (
@@ -63,11 +93,11 @@ export default function CourseDetailsPage() {
                 <div className="flex items-center gap-2 mb-6">
                   <img
                     src="/placeholder.svg?height=40&width=40"
-                    alt={course.instructor}
+                    alt={course.instructorId?.toString()}
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
-                    <p className="text-white font-medium">{course.instructor}</p>
+                    <p className="text-white font-medium">{course.instructorId}</p>
                     <p className="text-gray-400 text-sm">Course Instructor</p>
                   </div>
                 </div>
@@ -81,7 +111,7 @@ export default function CourseDetailsPage() {
                     <User className="w-5 h-5 text-purple-500" />
                     <div>
                       <p className="text-sm">Instructor</p>
-                      <p className="text-white">{course.instructor}</p>
+                      <p className="text-white">{course.instructorId}</p>
                     </div>
                   </div>
                   
