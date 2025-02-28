@@ -1,10 +1,85 @@
+"use client"
+
+import { useEffect, useState } from 'react'
 import { NavBar } from "@/components/layout/nav-bar"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { CourseCard } from '@/components/courses/course-card'
 import Link from "next/link"
-import { BarChart2, BookOpen } from "lucide-react"
+import { Pencil, BarChart2, BookOpen } from "lucide-react"
+import { Course } from '@/lib/types/course'
 
 export default function TeacherLandingPage() {
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          window.location.href = '/login'
+          return
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/teachercourses?unpublished=true`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('API Error:', errorData)
+          throw new Error(`Failed to fetch courses: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        setCourses(data)
+      } catch (error) {
+        setError((error as Error).message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCourses()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black">
+        <NavBar />
+        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
+          <p className="text-white text-xl">Loading courses...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black">
+        <NavBar />
+        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
+          <p className="text-red-500 text-xl">Something went wrong. Please try again later.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!courses.length) {
+    return (
+      <div className="min-h-screen bg-black">
+        <NavBar />
+        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
+          <p className="text-white text-xl">No courses available yet</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="page-container">
       <NavBar />
@@ -42,6 +117,24 @@ export default function TeacherLandingPage() {
           </Link>
         </div>
 
+        {courses.length > 0 && (
+          <div className="mt-16">
+            <h2 className="heading-2 text-center mb-8">Your Courses</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {courses.map((course) => (
+                <div key={course.id} className="relative">
+                  <CourseCard course={course} />
+                  <Button className="absolute top-4 right-4 bg-black/50 hover:bg-black/70" size="icon" asChild>
+                    <Link href={`/teacher/courses/${course.id}/edit`}>
+                      <Pencil className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="max-w-4xl mx-auto mt-12 p-6 bg-purple-500/5 rounded-lg border border-purple-500/10">
           <h3 className="text-lg font-semibold text-white mb-2 text-center">Need Help Getting Started?</h3>
           <p className="text-white text-center">
@@ -52,4 +145,6 @@ export default function TeacherLandingPage() {
     </div>
   )
 }
+
+
 

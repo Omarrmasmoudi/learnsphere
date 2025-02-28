@@ -7,16 +7,27 @@ import { Suspense } from 'react'
 export default async function CoursesPage() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/courses`, {
-      cache: 'no-store'
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
 
+    const contentType = response.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('server response not JSON')
+    }
+
     if (!response.ok) {
-      throw new Error('Failed to fetch courses')
+      const errorData = await response.json()
+      console.error('API Error:', errorData)
+      throw new Error('Failed to fetch courses: ${response.statusText}')
     }
 
     const courses = await response.json() as Course[]
 
     if (!courses.length) {
+      console.error('Error:', Error)
       return (
         <div className="min-h-screen bg-black">
           <CoursesNav />
@@ -70,6 +81,7 @@ export default async function CoursesPage() {
       </div>
     )
   } catch (error) {
+    console.error('Error:', error)
     return (
       <div className="min-h-screen bg-black">
         <CoursesNav />

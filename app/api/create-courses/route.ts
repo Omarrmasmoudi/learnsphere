@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
     // Get request body and validate
     const body = await request.json()
-    const { title, description, price, image, category, duration, level, priceRange, sections } = body
+    const { title, description, price, image, category, duration, level, priceRange, sections, published } = body
 
     if (!title || !description || !price) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         level,
         priceRange,
         instructorId: user.id,
-        published: false,
+        published: published || false,
         sections: sections ? {
           create: sections.map((section: any) => ({
             title: section.title,

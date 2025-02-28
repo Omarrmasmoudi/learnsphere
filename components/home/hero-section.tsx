@@ -10,7 +10,7 @@ export function HeroSection() {
       <div className="relative container px-4 py-32 mx-auto text-center">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 animate-fade-up">
           Revolutionizing Learning with{' '}
-          <span className="text-purple-500">Smart Technology</span>
+          <span className="text-blue-500">Smart Technology</span>
         </h1>
         <p className="max-w-2xl mx-auto text-lg text-gray-300 mb-8 animate-fade-up animation-delay-100">
           Transform your learning experience with personalized content, real-time analytics, and cutting-edge technology.

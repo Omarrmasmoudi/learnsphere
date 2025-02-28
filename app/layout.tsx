@@ -5,7 +5,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'LearnSphere - Revolutionizing Learning with Smart Technology',
-  description: 'Transform your learning experience with personalized content, engagement metrics, and secure data.',
+  description: 'Online Learning Platform.',
 }
 
 export default function RootLayout({

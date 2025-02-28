@@ -104,6 +104,18 @@ export default function CreateCoursePage() {
     setFormData({ ...formData, sections: newSections })
   }
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, sectionIndex: number, videoIndex: number) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Implement file upload logic here
+      // Example: const url = await uploadFile(file)
+      const url = 'uploaded-file-url' // Replace with actual upload logic
+      const newSections = [...formData.sections]
+      newSections[sectionIndex].videos[videoIndex].url = url
+      setFormData({ ...formData, sections: newSections })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black">
       <NavBar />
@@ -240,7 +252,12 @@ export default function CreateCoursePage() {
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
-                            <Input type="file" accept="video/*" className="form-input" />
+                            <Input 
+                              type="file" 
+                              accept="video/*" 
+                              className="form-input" 
+                              onChange={(e) => handleFileUpload(e, sectionIndex, videoIndex)}
+                            />
                           </div>
                         ))}
                         <Button variant="outline" onClick={() => addVideo(sectionIndex)}>

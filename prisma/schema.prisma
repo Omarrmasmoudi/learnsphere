@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -12,31 +12,31 @@ model User {
   email          String       @unique
   name           String
   password       String
-  createdCourses Course[]     @relation("createdCourses")
-  enrollments    Enrollment[]
-  teacher        Teacher?     @relation("UserTeacher")
-  admin          Admin?       @relation("UserAdmin")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  admin          Admin?       @relation("UserAdmin")
+  enrollments    Enrollment[]
+  teacher        Teacher?     @relation("UserTeacher")
+  createdCourses Course[]     @relation("createdCourses")
 }
 
 model Course {
   id           String       @id @default(uuid())
   title        String
   description  String?
-  instructorId Int
-  instructor   User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
   price        Int
   image        String?
-  video        String?
   category     String?
   duration     String?
   level        String?
   priceRange   String?      @default("$40-$100")
-  published    Boolean      @default(false)
-  enrollments  Enrollment[]
   createdAt    DateTime     @default(now())
+  instructorId Int
+  published    Boolean      @default(false)
   updatedAt    DateTime     @updatedAt
+  video        String?
+  enrollments  Enrollment[]
+  instructor   User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
   sections     Section[]
 
   @@map("courses")
@@ -46,11 +46,11 @@ model Enrollment {
   id          Int       @id @default(autoincrement())
   userId      Int
   courseId    String
-  status      String    @default("IN_PROGRESS")
-  enrolledAt  DateTime  @default(now())
   completedAt DateTime?
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrolledAt  DateTime  @default(now())
+  status      String    @default("IN_PROGRESS")
   course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
@@ -70,11 +70,11 @@ model Admin {
 model Section {
   id        Int      @id @default(autoincrement())
   title     String
-  courseId  String   // Changed from Int to String to match Course.id
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  videos    Video[]
+  courseId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  videos    Video[]
 
   @@map("sections")
 }
@@ -84,9 +84,9 @@ model Video {
   title     String
   url       String
   sectionId Int
-  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@map("videos")
 }
