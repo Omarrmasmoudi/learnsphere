@@ -61,7 +61,7 @@ export default function LoginPage() {
           >
             <X className="h-4 w-4" />
           </Button>
-          <CardTitle className="text-2xl text-white">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl text-white">Log in</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit}>
