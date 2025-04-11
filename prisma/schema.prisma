@@ -18,26 +18,45 @@ model User {
   enrollments    Enrollment[]
   teacher        Teacher?     @relation("UserTeacher")
   createdCourses Course[]     @relation("createdCourses")
+  age            Int?
+  location       String?
+  gender         String?
+  interests      String[] // Array of user interests
+  lastLogin      DateTime?
+  watchHistory   String[] // Array of watched course IDs
+  ratings        Rating[]     @relation("UserRatings") // Relation to a new `Rating` model
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  String
+  rating    Int // Rating value (e.g., 1–5)
+  createdAt DateTime @default(now())
+  user      User     @relation("UserRatings", fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model Course {
-  id           String       @id @default(uuid())
-  title        String
-  description  String?
-  price        Int
-  image        String?
-  category     String?
-  duration     String?
-  level        String?
-  priceRange   String?      @default("$40-$100")
-  createdAt    DateTime     @default(now())
-  instructorId Int
-  published    Boolean      @default(false)
-  updatedAt    DateTime     @updatedAt
-  video        String?
-  enrollments  Enrollment[]
-  instructor   User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
-  sections     Section[]
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  price          Int
+  image          String?
+  category       String?
+  duration       String?
+  level          String?
+  priceRange     String?      @default("$40-$100")
+  createdAt      DateTime     @default(now())
+  instructorId   Int
+  instructorName String
+  published      Boolean      @default(false)
+  updatedAt      DateTime     @updatedAt
+  video          String?
+  enrollments    Enrollment[]
+  instructor     User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
+  sections       Section[]
+  Rating         Rating[]
 
   @@map("courses")
 }

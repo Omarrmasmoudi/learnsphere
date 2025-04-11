@@ -35,9 +35,7 @@ export default function LoginPage() {
 
       if (response.ok) {
         setSuccess('Login successful!')
-        // Store token in localStorage or context
         localStorage.setItem('token', data.token)
-        // Optionally redirect to home page or dashboard
         router.push('/')
       } else {
         setError(data.error)
@@ -48,11 +46,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center p-4 relative">
+      {/* Background Effects */}
       <SphereBackground />
-      
-      <Card className="w-full max-w-md bg-black/40 backdrop-blur-xl border-purple-500/20">
+
+      {/* Login Card */}
+      <Card className="w-full max-w-md bg-gray-800/90 backdrop-blur-md shadow-lg rounded-lg relative">
         <CardHeader className="space-y-1 text-center relative">
+          {/* Close Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -61,75 +62,107 @@ export default function LoginPage() {
           >
             <X className="h-4 w-4" />
           </Button>
-          <CardTitle className="text-2xl text-white">Log in</CardTitle>
+          <CardTitle className="text-3xl font-bold text-white">Log In</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-2">
+        <CardContent className="space-y-6 p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email Input */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                Email Address
+              </label>
               <Input
+                id="email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-white"
+                className="bg-gray-700 border-gray-600 text-white focus:ring-purple-500 focus:border-purple-500"
               />
             </div>
-            <div className="space-y-2">
+
+            {/* Password Input */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                Password
+              </label>
               <div className="relative">
                 <Input
-                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-white pr-10"
+                  className="bg-gray-700 border-gray-600 text-white pr-10 focus:ring-purple-500 focus:border-purple-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              <p className="text-xs text-gray-500">Between 8 and 72 characters</p>
+              <p className="text-xs text-gray-500 mt-1">Between 8 and 72 characters</p>
             </div>
-            
-            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-500">
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-lg transition-colors"
+            >
               Log In
             </Button>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
-            {success && <p className="text-green-500 mt-2">{success}</p>}
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            {success && <p className="text-green-500 text-sm mt-2">{success}</p>}
           </form>
 
+          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-gray-600" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">or</span>
+              <span className="bg-gray-800 px-2 text-gray-400">or</span>
             </div>
           </div>
 
+          {/* Social Login Buttons */}
           <div className="space-y-2">
-            <Button variant="outline" className="w-full">
-              <img src="/placeholder.svg?height=24&width=24" className="mr-2 h-4 w-4" />
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2 text-white border-gray-600 hover:bg-gray-700"
+            >
+              <img src="/placeholder.svg?height=24&width=24" alt="Google" className="h-5 w-5" />
               Continue With Google
             </Button>
-            <Button variant="outline" className="w-full">
-              <img src="/placeholder.svg?height=24&width=24" className="mr-2 h-4 w-4" />
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2 text-white border-gray-600 hover:bg-gray-700"
+            >
+              <img src="/placeholder.svg?height=24&width=24" alt="Facebook" className="h-5 w-5" />
               Continue With Facebook
             </Button>
           </div>
 
-          <div className="text-center text-sm">
+          {/* Footer */}
+          <div className="text-center text-sm text-white">
             Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-purple-600 hover:text-purple-500">
+            <Link href="/signup" className="text-purple-500 hover:text-purple-400">
               Create one
             </Link>
           </div>
-          <p className="text-center text-xs text-gray-500">
-            I accept LearnSphere&apos;s Terms of Use and Privacy Notice.
-          </p>
+          <div className="flex items-center justify-center text-xs text-gray-400">
+            <input
+              type="checkbox"
+              id="terms"
+              className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
+            />
+            <label htmlFor="terms" className="ml-2">
+              I accept LearnSphere&apos;s Terms of Use and Privacy Notice.
+            </label>
+          </div>
         </CardContent>
       </Card>
     </div>

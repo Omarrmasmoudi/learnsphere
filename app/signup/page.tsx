@@ -1,26 +1,46 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SphereBackground } from '../../components/sphere-background'
+import Link from 'next/link'
+import e from 'express'
+
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [isCardVisible, setIsCardVisible] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [age,setAge] = useState('')
+  const [location, setLocation] = useState('')
+  const [countries, setCountries] = useState<string[]>([])
+  const [interests, setInterests] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const router = useRouter()
 
-  const handleClose = () => {
-    router.push('/')
-  }
+
+
+  useEffect(() => {
+    async function fetchCountries() {
+      try{
+        const response = await fetch('https://restcountries.com/v3.1/all')
+        const data = await response.json()
+        const countryNames = data.map((country: any) => country.name.common).sort()
+        setCountries(countryNames)
+      }
+      catch(error){
+        console.error('Error fetching countries:', error)
+      }
+    }
+    fetchCountries()
+  }, [])
+  
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -33,14 +53,13 @@ export default function SignUpPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email, password, name, age, location, interests }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
         setSuccess('Registration successful!')
-        // Optionally redirect to login page or home page
         router.push('/login')
       } else {
         setError(data.error)
@@ -51,68 +70,153 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(139,92,246,0.05)_25%,rgba(139,92,246,0.05)_50%,transparent_50%,transparent_75%,rgba(139,92,246,0.05)_75%)] bg-[length:24px_24px]" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center p-4 relative">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(139,92,246,0.05)_25%,rgba(139,92,246,0.05)_50%,transparent_50%,transparent_75%,rgba(139,92,246,0.05)_75%)] bg-[length:24px_24px] pointer-events-none" />
       <SphereBackground />
-      {isCardVisible && (
-        <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm relative">
-          <button
-            type="button"
-            onClick={handleClose}
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-          >
-            &times;
-          </button>
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl">Sign Up</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-2">
+
+      {/* Back Button */}
+      <button
+        onClick={() => router.push('/')}
+        className="absolute top-4 left-4 flex items-center gap-2 text-gray-400 hover:text-gray-200 transition-colors"
+        aria-label="Go back to home"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="text-sm font-medium">Back</span>
+      </button>
+
+      {/* Sign-Up Card */}
+      <Card className="w-full max-w-md bg-gray-800/90 backdrop-blur-md shadow-lg rounded-lg relative">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-3xl font-bold text-white">Sign Up</CardTitle>
+          <p className="text-sm text-gray-400">Create your account to get started</p>
+        </CardHeader>
+        <CardContent className="space-y-6 p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+       
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+                Full Name
+              </label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                Email Address
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+      
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                Password
+              </label>
+              <div className="relative">
                 <Input
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="bg-white"
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white pr-10 focus:ring-purple-500 focus:border-purple-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </button>
               </div>
-              <div className="space-y-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-white pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
-                  >
-                    {showPassword ? <EyeOff /> : <Eye />}
-                  </button>
-                </div>
-              </div>
-              <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-500 transition-colors">
-                Sign Up
-              </Button>
-              {error && <p className="text-red-500 mt-2">{error}</p>}
-              {success && <p className="text-green-500 mt-2">{success}</p>}
-            </form>
-          </CardContent>
-        </Card>
-      )}
+            </div>
+
+            <div>
+              <label htmlFor="age" className='block text-sm font-medium text-gray-300 mb-1'>
+                Age
+              </label>
+              <Input
+                id="age"
+                type="number"
+                placeholder="Enter your age"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-300 mb-1"></label>
+              <select 
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white focus:ring-purple-500 focus:border-purple-500 w-full p-2 rounded-lg"
+              >
+                <option value="" disabled>
+                  Select your country
+                </option>
+                {countries.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="interests" className="block text-sm font-medium text-gray-300 mb-1">
+                Interests
+              </label>
+              <Input
+                id="interests"
+                type="text"
+                placeholder="Enter your interests"
+                value={interests}
+                onChange={(e) => setInterests(e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white focus:ring-purple-500 focus:border-purple-500"
+              />
+            </div>
+
+            
+            <Button
+              type="submit"
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-lg transition-colors"
+            >
+              Sign Up
+            </Button>
+
+            
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            {success && <p className="text-green-500 text-sm mt-2">{success}</p>}
+          </form>
+          
+          <p className="text-sm text-gray-400">
+            Already have an account?{' '}
+            <Link href="/login" className="text-purple-500 hover:underline">
+              Log in
+            </Link>
+          </p>
+          
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -47,6 +47,7 @@ export async function POST(request: Request) {
         duration,
         level,
         priceRange,
+        instructorName: user.name,
         instructorId: user.id,
         published: published || false,
         sections: sections ? {

@@ -82,7 +82,7 @@ export default function CourseDetailsPage() {
                 <div className="flex items-center gap-4 text-gray-300 mb-6">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
-                    <span>4,562 enrolled</span>
+                    <span>999</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Medal className="w-4 h-4" />
@@ -97,7 +97,7 @@ export default function CourseDetailsPage() {
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
-                    <p className="text-white font-medium">{course.instructorId}</p>
+                    <p className="text-white font-medium">{course.instructorName}</p>
                     <p className="text-gray-400 text-sm">Course Instructor</p>
                   </div>
                 </div>
@@ -111,7 +111,7 @@ export default function CourseDetailsPage() {
                     <User className="w-5 h-5 text-purple-500" />
                     <div>
                       <p className="text-sm">Instructor</p>
-                      <p className="text-white">{course.instructorId}</p>
+                      <p className="text-white">{course.instructorName}</p>
                     </div>
                   </div>
                   
@@ -167,8 +167,11 @@ export default function CourseDetailsPage() {
                   Master the art of {course.category} with our comprehensive course. Learn advanced techniques
                   and best practices. Perfect for designers looking to elevate their skills.
                 </p>
+                <h3 className="text-xl font-bold text-white mb-4">Description</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  {course.description}
+                </p>
               </section>
-
               <section>
                 <h2 className="text-xl font-bold text-white mb-4">What You&apos;ll Learn</h2>
                 <ul className="grid gap-3 text-gray-300">

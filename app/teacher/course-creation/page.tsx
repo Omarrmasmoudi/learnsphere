@@ -107,8 +107,8 @@ export default function CreateCoursePage() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, sectionIndex: number, videoIndex: number) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Implement file upload logic here
-      // Example: const url = await uploadFile(file)
+// Implement file upload logic here
+// Example: const url = await uploadFile(file)
       const url = 'uploaded-file-url' // Replace with actual upload logic
       const newSections = [...formData.sections]
       newSections[sectionIndex].videos[videoIndex].url = url
@@ -117,22 +117,22 @@ export default function CreateCoursePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-900 text-gray-100">
       <NavBar />
       <main className="pt-24 px-4 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8">Create New Course</h1>
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-8">Create New Course</h1>
 
-          <div className="space-y-8">
+          <div className="space-y-10">
             {/* Basic Information */}
-            <Card className="border-purple-500/20 bg-black/50 backdrop-blur-sm">
+            <Card className="border border-gray-700 bg-gray-800 shadow-lg">
               <div className="p-6">
                 <h2 className="text-2xl font-semibold text-white mb-6">Basic Information</h2>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <label className="text-sm font-medium text-gray-200">Course Title</label>
+                    <label className="text-sm font-medium text-gray-300">Course Title</label>
                     <Input 
-                      className="bg-black/50 border-purple-500/20 text-white mt-1" 
+                      className="bg-gray-700 border-gray-600 text-white mt-1" 
                       placeholder="Enter course title"
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -140,25 +140,25 @@ export default function CreateCoursePage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-gray-200">Description</label>
+                    <label className="text-sm font-medium text-gray-300">Description</label>
                     <Textarea 
-                      className="bg-black/50 border-purple-500/20 text-white mt-1 min-h-[100px]" 
+                      className="bg-gray-700 border-gray-600 text-white mt-1 min-h-[100px]" 
                       placeholder="Enter course description"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     />
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-sm font-medium text-gray-200">Category</label>
+                      <label className="text-sm font-medium text-gray-300">Category</label>
                       <Select
                         onValueChange={(value) => setFormData({ ...formData, category: value })}
                       >
-                        <SelectTrigger className="bg-black/50 border-purple-500/20 text-white mt-1">
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
-                        <SelectContent className="bg-black border border-purple-500/20">
+                        <SelectContent className="bg-gray-800 border border-gray-600">
                           <SelectItem value="design">Design</SelectItem>
                           <SelectItem value="development">Development</SelectItem>
                           <SelectItem value="business">Business</SelectItem>
@@ -166,14 +166,14 @@ export default function CreateCoursePage() {
                       </Select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-200">Level</label>
+                      <label className="text-sm font-medium text-gray-300">Level</label>
                       <Select
                         onValueChange={(value) => setFormData({ ...formData, level: value })}
                       >
-                        <SelectTrigger className="bg-black/50 border-purple-500/20 text-white mt-1">
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white mt-1">
                           <SelectValue placeholder="Select level" />
                         </SelectTrigger>
-                        <SelectContent className="bg-black border border-purple-500/20">
+                        <SelectContent className="bg-gray-800 border border-gray-600">
                           <SelectItem value="beginner">Beginner</SelectItem>
                           <SelectItem value="intermediate">Intermediate</SelectItem>
                           <SelectItem value="advanced">Advanced</SelectItem>
@@ -183,9 +183,9 @@ export default function CreateCoursePage() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-gray-200">Course Thumbnail</label>
-                    <div className="border-2 border-dashed border-purple-500/20 rounded-lg p-8 text-center mt-1">
-                      <Button variant="outline" className="text-white border-purple-500/20 hover:bg-purple-500/10">
+                    <label className="text-sm font-medium text-gray-300">Course Thumbnail</label>
+                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center mt-1">
+                      <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700">
                         <ImagePlus className="w-4 h-4 mr-2" />
                         Upload Thumbnail
                       </Button>
@@ -196,7 +196,7 @@ export default function CreateCoursePage() {
             </Card>
 
             {/* Course Content */}
-            <Card className="border-purple-500/20 bg-black/50 backdrop-blur-sm">
+            <Card className="border border-gray-700 bg-gray-800 shadow-lg">
               <div className="p-6">
                 <h2 className="text-2xl font-semibold text-white mb-6">Course Content</h2>
                 <div className="space-y-6">
@@ -204,9 +204,9 @@ export default function CreateCoursePage() {
                     <div key={sectionIndex} className="space-y-4">
                       <div className="flex items-start gap-4">
                         <div className="flex-1">
-                          <label className="form-label">Section Title</label>
+                          <label className="text-sm font-medium text-gray-300">Section Title</label>
                           <Input
-                            className="form-input"
+                            className="bg-gray-700 border-gray-600 text-white mt-1"
                             placeholder={`Section ${sectionIndex + 1} title`}
                             value={section.title}
                             onChange={(e) => {
@@ -231,7 +231,7 @@ export default function CreateCoursePage() {
                           <div key={videoIndex} className="grid gap-4">
                             <div className="flex gap-4">
                               <Input
-                                className="form-input"
+                                className="bg-gray-700 border-gray-600 text-white"
                                 placeholder="Video title"
                                 value={video.title}
                                 onChange={(e) => {
@@ -255,7 +255,7 @@ export default function CreateCoursePage() {
                             <Input 
                               type="file" 
                               accept="video/*" 
-                              className="form-input" 
+                              className="bg-gray-700 border-gray-600 text-white"
                               onChange={(e) => handleFileUpload(e, sectionIndex, videoIndex)}
                             />
                           </div>
@@ -276,14 +276,14 @@ export default function CreateCoursePage() {
             </Card>
 
             {/* Price */}
-            <Card className="border-purple-500/20 bg-black/50 backdrop-blur-sm">
+            <Card className="border border-gray-700 bg-gray-800 shadow-lg">
               <div className="p-6">
                 <h2 className="text-2xl font-semibold text-white mb-6">Pricing</h2>
                 <div>
-                  <label className="text-sm font-medium text-gray-200">Course Price (USD)</label>
+                  <label className="text-sm font-medium text-gray-300">Course Price (USD)</label>
                   <Input 
                     type="number" 
-                    className="bg-black/50 border-purple-500/20 text-white mt-1 max-w-[200px]" 
+                    className="bg-gray-700 border-gray-600 text-white mt-1 max-w-[200px]" 
                     placeholder="Enter price"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
@@ -295,7 +295,7 @@ export default function CreateCoursePage() {
             <div className="flex justify-end gap-4">
               <Button 
                 variant="outline" 
-                className="text-white border-purple-500/20 hover:bg-purple-500/10"
+                className="text-white border-gray-600 hover:bg-gray-700"
                 onClick={() => handleSubmit(true)}
                 disabled={isLoading}
               >

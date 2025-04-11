@@ -15,6 +15,7 @@ export interface Course extends Prisma.CourseGetPayload<null> {
   published: boolean
   createdAt: Date
   updatedAt: Date
+  enrollments: number
 }
 
 // export type CourseWithInstructor = Prisma.CourseGetPayload<{
