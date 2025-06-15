@@ -21,10 +21,10 @@ model User {
   age            Int?
   location       String?
   gender         String?
-  interests      String[] // Array of user interests
+  interests      String?
   lastLogin      DateTime?
-  watchHistory   String[] // Array of watched course IDs
-  ratings        Rating[]     @relation("UserRatings") // Relation to a new `Rating` model
+  watchHistory   String[] 
+  ratings        Rating[]     @relation("UserRatings")
 }
 
 model Rating {
