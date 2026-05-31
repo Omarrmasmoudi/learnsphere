@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -53,9 +54,11 @@ export function Testimonials() {
               <Card key={index} className="bg-white">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4 mb-4">
-                    <img
+                    <Image
                       src={testimonial.avatar}
-                      alt=""
+                      alt={testimonial.name}
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full"
                     />
                     <div>

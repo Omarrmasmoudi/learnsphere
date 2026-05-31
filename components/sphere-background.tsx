@@ -20,7 +20,7 @@ export function SphereBackground() {
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
 
-    let particles: { x: number; y: number; z: number; radius: number }[] = []
+    const particles: { x: number; y: number; z: number; radius: number }[] = []
     const numParticles = 100
     const maxRadius = 2
     const perspective = 500

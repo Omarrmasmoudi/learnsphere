@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -54,20 +55,26 @@ export default function PaymentPage() {
                   </p>
 
                   <div className="flex items-center gap-8 mb-8">
-                    <img
-                      src="/placeholder.svg?height=30&width=30"
+                    <Image
+                      src="/placeholder.svg"
                       alt="PayPal"
-                      className="h-8"
+                      width={32}
+                      height={32}
+                      className="h-8 w-auto"
                     />
-                    <img
-                      src="/placeholder.svg?height=30&width=30"
+                    <Image
+                      src="/placeholder.svg"
                       alt="Mastercard"
-                      className="h-8"
+                      width={32}
+                      height={32}
+                      className="h-8 w-auto"
                     />
-                    <img
-                      src="/placeholder.svg?height=30&width=30"
+                    <Image
+                      src="/placeholder.svg"
                       alt="Visa"
-                      className="h-8"
+                      width={32}
+                      height={32}
+                      className="h-8 w-auto"
                     />
                   </div>
 
@@ -146,11 +153,12 @@ export default function PaymentPage() {
 
               <div className="lg:col-span-1">
                 <Card className="bg-purple-50/5 border-purple-500/20 backdrop-blur-sm p-6">
-                  <div className="aspect-video rounded-lg overflow-hidden bg-purple-800/20 mb-6">
-                    <img
+                  <div className="relative aspect-video rounded-lg overflow-hidden bg-purple-800/20 mb-6">
+                    <Image
                       src={course.image || "/placeholder.svg"}
                       alt={course.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
 
@@ -158,7 +166,7 @@ export default function PaymentPage() {
                     {course.title}
                   </h2>
                   <p className="text-gray-400 text-sm mb-6">
-                    by {course.instructor}
+                    by {course.instructorName}
                   </p>
 
                   <div className="border-t border-purple-500/20 pt-6 mb-6">
@@ -192,4 +200,3 @@ export default function PaymentPage() {
     </div>
   )
 }
-

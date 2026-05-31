@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useParams } from "next/navigation"
 import { NavBar } from "@/components/layout/nav-bar"
 import { Button } from "@/components/ui/button"
@@ -110,9 +111,11 @@ export default function EditCoursePage() {
                   <label className="form-label">Course Thumbnail</label>
                   <div className="border-2 border-dashed border-purple-500/20 rounded-lg p-8">
                     <div className="flex items-center gap-4">
-                      <img
+                      <Image
                         src={course.image || "/placeholder.svg"}
                         alt="Current thumbnail"
+                        width={128}
+                        height={128}
                         className="w-32 h-32 object-cover rounded-lg"
                       />
                       <Button variant="outline">
@@ -217,4 +220,3 @@ export default function EditCoursePage() {
     </div>
   )
 }
-

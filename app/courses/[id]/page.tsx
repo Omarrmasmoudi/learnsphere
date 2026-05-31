@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -67,11 +68,12 @@ export default function CourseDetailsPage() {
           <div className="container mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <div className="aspect-video rounded-lg overflow-hidden bg-purple-800/20 mb-6">
-                  <img
+                <div className="relative aspect-video rounded-lg overflow-hidden bg-purple-800/20 mb-6">
+                  <Image
                     src={course.image || "/placeholder.svg"}
                     alt={course.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 
@@ -91,10 +93,12 @@ export default function CourseDetailsPage() {
                 </div>
 
                 <div className="flex items-center gap-2 mb-6">
-                  <img
-                    src="/placeholder.svg?height=40&width=40"
-                    alt={course.instructorId?.toString()}
-                    className="w-10 h-10 rounded-full"
+                  <Image
+                    src="/placeholder.svg"
+                    alt={course.instructorName || "Instructor"}
+                    width={40}
+                    height={40}
+                    className="rounded-full"
                   />
                   <div>
                     <p className="text-white font-medium">{course.instructorName}</p>

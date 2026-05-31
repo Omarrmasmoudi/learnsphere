@@ -51,6 +51,7 @@ export const courses: Partial<Course>[] = [
     title: 'Data Science',
     description: 'Learn how to analyze data and make data-driven decisions.',
     instructorId: 1,
+    instructorName: 'John Doe',
     price: 65,
     image: '/placeholder.svg?height=200&width=300',
     category: 'Data Science',
@@ -66,6 +67,7 @@ export const courses: Partial<Course>[] = [
     title: 'Advanced UI Design Mastery in Figma',
     description: 'Learn how to design user interfaces that are beautiful and functional.',
     instructorId: 4,
+    instructorName: 'Alice Brown',
     price: 120,
     image: '/placeholder.svg?height=200&width=300',
     category: 'UI Design',
@@ -92,4 +94,6 @@ export const courses: Partial<Course>[] = [
     updatedAt: new Date()
   }
 ]
+
+
 

@@ -36,6 +36,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
+    interface VideoInput {
+      title: string;
+      url: string;
+    }
+    interface SectionInput {
+      title: string;
+      videos?: VideoInput[];
+    }
+
     // Create course with sections if provided
     const course = await prisma.course.create({
       data: {
@@ -51,7 +60,7 @@ export async function POST(request: Request) {
         instructorId: user.id,
         published: published || false,
         sections: sections ? {
-          create: sections.map((section: any) => ({
+          create: sections.map((section: SectionInput) => ({
             title: section.title,
             videos: {
               create: section.videos

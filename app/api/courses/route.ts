@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
-    const url = new URL(request.url)
-    const showUnpublished = url.searchParams.get('unpublished') === 'true'
+    // const url = new URL(request.url)
+    // const showUnpublished = url.searchParams.get('unpublished') === 'true'
     await prisma.$connect()
     const courses = await prisma.course.findMany({
       where: {

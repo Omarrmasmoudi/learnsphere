@@ -20,6 +20,7 @@ export async function getTeacherCourses(): Promise<Course[]> {
       title: true,
       description: true,
       instructorId: true,
+      instructorName: true,
       price: true,
       image: true,
       video: true,

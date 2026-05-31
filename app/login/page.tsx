@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Eye, EyeOff, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,7 +41,7 @@ export default function LoginPage() {
       } else {
         setError(data.error)
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred.')
     }
   }
@@ -134,14 +135,14 @@ export default function LoginPage() {
               variant="outline"
               className="w-full flex items-center justify-center gap-2 text-white border-gray-600 hover:bg-gray-700"
             >
-              <img src="/placeholder.svg?height=24&width=24" alt="Google" className="h-5 w-5" />
+              <Image src="/placeholder.svg" alt="Google" width={20} height={20} className="h-5 w-5" />
               Continue With Google
             </Button>
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2 text-white border-gray-600 hover:bg-gray-700"
             >
-              <img src="/placeholder.svg?height=24&width=24" alt="Facebook" className="h-5 w-5" />
+              <Image src="/placeholder.svg" alt="Facebook" width={20} height={20} className="h-5 w-5" />
               Continue With Facebook
             </Button>
           </div>

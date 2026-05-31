@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,9 +9,11 @@ export function CoursesNav() {
     <header className="fixed top-0 w-full z-50 bg-black/50 border-b">
       <nav className="container flex items-center justify-between h-16 px-4 mx-auto">
         <Link href="/" className="flex items-center gap-2">
-          <img 
+          <Image 
             src="/logo.png" 
             alt="LearnSphere Logo" 
+            width={32}
+            height={32}
             className="w-8 h-8"
           />
           <span className="text-xl font-bold text-purple-600">LearnSphere</span>

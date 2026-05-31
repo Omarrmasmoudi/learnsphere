@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -20,9 +21,11 @@ export function NavBarL({ user }: NavBarLProps) {
       <nav className="container flex items-center justify-between h-16 px-4 mx-auto">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <img 
+          <Image 
             src="/logo.png" 
             alt="LearnSphere Logo" 
+            width={32}
+            height={32}
             className="w-8 h-8"
           />
           <span className="text-xl font-bold text-purple-500">LearnSphere</span>

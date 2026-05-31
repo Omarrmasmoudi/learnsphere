@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 import { NavBar } from '@/components/layout/nav-bar'
 import { NavBarL } from '@/components/layout/nav-barLoggedin'
 import { HeroSection } from '@/components/home/hero-section'

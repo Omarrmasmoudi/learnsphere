@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { courseId } = params
+    const { id: courseId } = await params
     const body = await req.json()
     
     const course = await prisma.course.update({
@@ -15,7 +15,7 @@ export async function PATCH(
     })
 
     return NextResponse.json(course)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Failed to update course' }, { status: 500 })
   }
 }

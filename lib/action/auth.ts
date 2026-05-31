@@ -24,8 +24,8 @@ export const verifyJwt = async (token: string): Promise<JWTPayload | null> => {
     });
 
     return payload as JWTPayload;
-  } catch (error) {
-    console.error('Token verification failed:', error);
+  } catch (_error) {
+    console.error('Token verification failed:', _error);
     return null;
   }
 };
@@ -61,8 +61,8 @@ export const verifyToken = async (token: string): Promise<JWTPayload | null> => 
     });
 
     return payload as JWTPayload;
-  } catch (error) {
-    console.error('Token verification failed:', error);
+  } catch (_error) {
+    console.error('Token verification failed:', _error);
     return null;
   }
 };
@@ -91,7 +91,7 @@ export async function getCurrentUser() {
     })
     
     return user
-  } catch (error) {
+  } catch (_error) {
     return null
   }
 };
