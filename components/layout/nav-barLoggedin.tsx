@@ -13,8 +13,8 @@ interface NavBarLProps {
 
 
 export function NavBarL({ user }: NavBarLProps) {
-    const handleLogout = () => {
-        localStorage.removeItem('token')
+    const handleLogout = async () => {
+        await fetch('/api/auth/logout', { method: 'POST' })
         window.location.href = '/login'}
     return (
     <header className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md border-b border-purple-500/20">

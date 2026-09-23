@@ -16,15 +16,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const token = localStorage.getItem('token')
-        if (!token){
-          return
-        }
-        const response = await fetch('/api/auth/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        const response = await fetch('/api/auth/me')
         if (response.ok) {
           const data = await response.json()
           setUser(data)

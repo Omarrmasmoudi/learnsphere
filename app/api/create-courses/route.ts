@@ -1,26 +1,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyJwt } from '@/lib/action/auth'
+import { getSessionUserId } from '@/lib/action/auth'
 
 export async function POST(request: Request) {
   try {
-    // Get and verify token
-    const token = request.headers.get('Authorization')?.split(' ')[1]
-    if (!token) {
-      console.log('No token provided')
-      return NextResponse.json({ error: 'No token provided' }, { status: 401 })
+    const userId = await getSessionUserId()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify JWT and get user ID
-    const payload = await verifyJwt(token)
-    if (!payload) {
-      console.log('Invalid token')
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    // Get user directly from payload
     const user = await prisma.user.findUnique({
-      where: { id: payload.userId }
+      where: { id: userId }
     })
 
     if (!user) {

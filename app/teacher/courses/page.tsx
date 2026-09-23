@@ -8,16 +8,11 @@ export default async function TeacherCoursesPage() {
   const user = await getCurrentUser()
   
   if (!user) {
-    redirect('/login') 
+    redirect('/login?next=/teacher/courses')
   }
 
-  const role = user.teacher ? 'TEACHER' : user.admin ? 'ADMIN' : 'STUDENT';
-
-  if (role !== 'TEACHER') {
-    redirect('/')
-  }
-
-  // Now this is reachable
+  // Any signed-in user can teach for now (same rule as /api/create-courses);
+  // gate on user.role once there is a way to become a TEACHER.
   const courses: Course[] = await getTeacherCourses()
 
   return (
