@@ -3,10 +3,13 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { canTeach } from '@/lib/auth/roles'
+import type { UserRole } from '@/lib/types/roles'
 
 interface NavBarLProps {
   user: {
     name: string
+    role: UserRole
   }
 }
 
@@ -34,9 +37,15 @@ export function NavBarL({ user }: NavBarLProps) {
         {/* Navigation & Search */}
         <div className="flex items-center gap-8 flex-1 max-w-2xl mx-8">
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/teacher" className="text-gray-300 hover:text-white transition-colors">
-              Teacher
-            </Link>
+            {canTeach(user.role) ? (
+              <Link href="/teacher" className="text-gray-300 hover:text-white transition-colors">
+                Teacher
+              </Link>
+            ) : (
+              <Link href="/become-teacher" className="text-gray-300 hover:text-white transition-colors">
+                Teach
+              </Link>
+            )}
             <Link href="/courses" className="text-gray-300 hover:text-white transition-colors">
               Courses
             </Link>

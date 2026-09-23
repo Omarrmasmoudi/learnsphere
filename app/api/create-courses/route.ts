@@ -1,21 +1,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getSessionUserId } from '@/lib/action/auth'
+import { getCurrentUser } from '@/lib/action/auth'
+import { canTeach } from '@/lib/auth/roles'
 
 export async function POST(request: Request) {
   try {
-    const userId = await getSessionUserId()
-    if (!userId) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    })
-
-    if (!user) {
-      console.log('User not found')
-      return NextResponse.json({ error: 'User not found' }, { status: 401 })
+    if (!canTeach(user.role)) {
+      return NextResponse.json({ error: 'Only teachers can create courses' }, { status: 403 })
     }
 
     // Get request body and validate
@@ -70,14 +65,3 @@ export async function POST(request: Request) {
   }
 }
 
-
-// Check if user is a teacher
-    // const teacher = await prisma.teacher.findFirst({
-    //   where: {
-    //     userId: user.id
-    //   }
-    // })
-
-    // if (!teacher) {
-    //   return NextResponse.json({ error: 'User is not a teacher' }, { status: 403 })
-    // }

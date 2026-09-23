@@ -7,9 +7,11 @@ import { FeaturesSection } from '@/components/home/features-section'
 import { Testimonials } from '@/components/home/testimonials'
 import { Newsletter } from '@/components/home/newsletter'
 import { Footer } from '@/components/layout/footer'
+import type { UserRole } from '@/lib/types/roles'
 
 interface User {
   name: string
+  role: UserRole
 }
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)

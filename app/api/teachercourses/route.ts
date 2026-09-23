@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getSessionUserId } from '@/lib/action/auth'
+import { getCurrentUser } from '@/lib/action/auth'
+import { canTeach } from '@/lib/auth/roles'
 
 export async function GET(request: Request) {
   try {
-    const userId = await getSessionUserId()
-    if (!userId) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!canTeach(user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const url = new URL(request.url)
@@ -14,7 +18,7 @@ export async function GET(request: Request) {
 
     const courses = await prisma.course.findMany({
       where: {
-        instructorId: userId,
+        instructorId: user.id,
         ...(showUnpublished ? {} : { published: true })
       },
       orderBy: {

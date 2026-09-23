@@ -11,8 +11,6 @@ export default async function TeacherCoursesPage() {
     redirect('/login?next=/teacher/courses')
   }
 
-  // Any signed-in user can teach for now (same rule as /api/create-courses);
-  // gate on user.role once there is a way to become a TEACHER.
   const courses: Course[] = await getTeacherCourses()
 
   return (

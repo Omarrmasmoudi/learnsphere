@@ -65,6 +65,10 @@ export default function CreateCoursePage() {
           router.push('/login?next=/teacher/course-creation')
           return
         }
+        if (response.status === 403) {
+          router.push('/become-teacher')
+          return
+        }
         throw new Error('Failed to create course')
       }
   

@@ -23,6 +23,10 @@ export default function TeacherLandingPage() {
           window.location.href = '/login?next=/teacher'
           return
         }
+        if (response.status === 403) {
+          window.location.href = '/become-teacher'
+          return
+        }
 
         if (!response.ok) {
           const errorData = await response.json()

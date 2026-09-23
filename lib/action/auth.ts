@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import prisma from '@/lib/prisma'
-import { getUserRole } from '@/lib/auth/roles'
+import { roleFrom } from '@/lib/auth/roles'
 import { SESSION_COOKIE, verifySession } from '@/lib/auth/session'
 
 /** Id of the signed-in user, from the session cookie. Does not hit the database. */
@@ -16,9 +16,16 @@ export async function getCurrentUser() {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, name: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      teacher: { select: { id: true } },
+      admin: { select: { id: true } },
+    },
   })
   if (!user) return null
 
-  return { ...user, role: await getUserRole(user.id) }
+  const { teacher: _teacher, admin: _admin, ...profile } = user
+  return { ...profile, role: roleFrom(user) }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getSessionUserId } from '@/lib/action/auth'
+import { getCurrentUser } from '@/lib/action/auth'
+import { canTeach } from '@/lib/auth/roles'
 
 const EDITABLE_FIELDS = [
   'title',
@@ -20,9 +21,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = await getSessionUserId()
-    if (!userId) {
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!canTeach(user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const { id: courseId } = await params
@@ -33,7 +37,8 @@ export async function PATCH(
     if (!existing) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
-    if (existing.instructorId !== userId) {
+    // Teachers edit their own courses; admins can edit any
+    if (existing.instructorId !== user.id && user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
