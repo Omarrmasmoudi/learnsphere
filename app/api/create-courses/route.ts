@@ -1,31 +1,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyJwt } from '@/lib/action/auth'
+import { getCurrentUser } from '@/lib/action/auth'
+import { canTeach } from '@/lib/auth/roles'
 
 export async function POST(request: Request) {
   try {
-    // Get and verify token
-    const token = request.headers.get('Authorization')?.split(' ')[1]
-    if (!token) {
-      console.log('No token provided')
-      return NextResponse.json({ error: 'No token provided' }, { status: 401 })
-    }
-
-    // Verify JWT and get user ID
-    const payload = await verifyJwt(token)
-    if (!payload) {
-      console.log('Invalid token')
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    // Get user directly from payload
-    const user = await prisma.user.findUnique({
-      where: { id: payload.userId }
-    })
-
+    const user = await getCurrentUser()
     if (!user) {
-      console.log('User not found')
-      return NextResponse.json({ error: 'User not found' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!canTeach(user.role)) {
+      return NextResponse.json({ error: 'Only teachers can create courses' }, { status: 403 })
     }
 
     // Get request body and validate
@@ -80,14 +65,3 @@ export async function POST(request: Request) {
   }
 }
 
-
-// Check if user is a teacher
-    // const teacher = await prisma.teacher.findFirst({
-    //   where: {
-    //     userId: user.id
-    //   }
-    // })
-
-    // if (!teacher) {
-    //   return NextResponse.json({ error: 'User is not a teacher' }, { status: 403 })
-    // }

@@ -7,24 +7,18 @@ import { FeaturesSection } from '@/components/home/features-section'
 import { Testimonials } from '@/components/home/testimonials'
 import { Newsletter } from '@/components/home/newsletter'
 import { Footer } from '@/components/layout/footer'
+import type { UserRole } from '@/lib/types/roles'
 
 interface User {
   name: string
+  role: UserRole
 }
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
   useEffect(() => {
     async function fetchUser() {
       try {
-        const token = localStorage.getItem('token')
-        if (!token){
-          return
-        }
-        const response = await fetch('/api/auth/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        const response = await fetch('/api/auth/me')
         if (response.ok) {
           const data = await response.json()
           setUser(data)

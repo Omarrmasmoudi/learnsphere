@@ -5,7 +5,6 @@ export async function GET(_request: Request) {
   try {
     // const url = new URL(request.url)
     // const showUnpublished = url.searchParams.get('unpublished') === 'true'
-    await prisma.$connect()
     const courses = await prisma.course.findMany({
       where: {
         published: true
@@ -14,7 +13,6 @@ export async function GET(_request: Request) {
         createdAt: 'desc'
       }
     })
-    console.log('Fetched courses:', courses)
 
     return NextResponse.json(courses)
   } catch (error) {
@@ -23,7 +21,5 @@ export async function GET(_request: Request) {
       { error: 'Failed to fetch courses' },
       { status: 500 }
     )
-  }finally {
-    await prisma.$disconnect()
   }
 }

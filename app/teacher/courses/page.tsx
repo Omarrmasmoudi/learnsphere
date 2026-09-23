@@ -8,16 +8,9 @@ export default async function TeacherCoursesPage() {
   const user = await getCurrentUser()
   
   if (!user) {
-    redirect('/login') 
+    redirect('/login?next=/teacher/courses')
   }
 
-  const role = user.teacher ? 'TEACHER' : user.admin ? 'ADMIN' : 'STUDENT';
-
-  if (role !== 'TEACHER') {
-    redirect('/')
-  }
-
-  // Now this is reachable
   const courses: Course[] = await getTeacherCourses()
 
   return (
@@ -25,7 +18,7 @@ export default async function TeacherCoursesPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">My Courses</h1>
         <Link 
-          href="/teacher/courses/new"
+          href="/teacher/course-creation"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Create New Course

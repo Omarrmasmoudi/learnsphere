@@ -36,8 +36,10 @@ export default function LoginPage() {
 
       if (response.ok) {
         setSuccess('Login successful!')
-        localStorage.setItem('token', data.token)
-        router.push('/')
+        const next = new URLSearchParams(window.location.search).get('next')
+        // Only follow same-origin paths, never "//host" or absolute URLs
+        router.push(next && next.startsWith('/') && !next.startsWith('//') ? next : '/')
+        router.refresh()
       } else {
         setError(data.error)
       }

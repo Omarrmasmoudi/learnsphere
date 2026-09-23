@@ -41,7 +41,7 @@ export default function TeacherDashboard() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="heading-1 mb-0">Teacher Dashboard</h1>
           <Button className="btn-primary" asChild>
-            <Link href="/teacher/create-course">
+            <Link href="/teacher/course-creation">
               <Plus className="w-4 h-4 mr-2" />
               Create Course
             </Link>

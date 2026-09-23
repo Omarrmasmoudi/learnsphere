@@ -3,18 +3,21 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { canTeach } from '@/lib/auth/roles'
+import type { UserRole } from '@/lib/types/roles'
 
 interface NavBarLProps {
   user: {
     name: string
+    role: UserRole
   }
 }
 
 
 
 export function NavBarL({ user }: NavBarLProps) {
-    const handleLogout = () => {
-        localStorage.removeItem('token')
+    const handleLogout = async () => {
+        await fetch('/api/auth/logout', { method: 'POST' })
         window.location.href = '/login'}
     return (
     <header className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md border-b border-purple-500/20">
@@ -34,9 +37,15 @@ export function NavBarL({ user }: NavBarLProps) {
         {/* Navigation & Search */}
         <div className="flex items-center gap-8 flex-1 max-w-2xl mx-8">
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/teacher" className="text-gray-300 hover:text-white transition-colors">
-              Teacher
-            </Link>
+            {canTeach(user.role) ? (
+              <Link href="/teacher" className="text-gray-300 hover:text-white transition-colors">
+                Teacher
+              </Link>
+            ) : (
+              <Link href="/become-teacher" className="text-gray-300 hover:text-white transition-colors">
+                Teach
+              </Link>
+            )}
             <Link href="/courses" className="text-gray-300 hover:text-white transition-colors">
               Courses
             </Link>
@@ -57,15 +66,6 @@ export function NavBarL({ user }: NavBarLProps) {
         {/* User Info */}
         <div className="flex items-center gap-4">
           <span className="text-gray-300">Welcome, {user.name}</span>
-          <Link href="/profile">
-            <Button 
-              variant="ghost"
-              className="text-gray-300 hover:text-white hover:bg-purple-500/10"
-            >
-              Profile
-            </Button>
-          </Link>
-          
             <Button className="bg-purple-500 text-white hover:bg-purple-600" onClick={handleLogout}>
               Logout
             </Button>

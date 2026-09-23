@@ -1,41 +1,30 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getUserIdFromToken } from '@/lib/utils/userId'
+import { getCurrentUser } from '@/lib/action/auth'
+import { canTeach } from '@/lib/auth/roles'
 
 export async function GET(request: Request) {
   try {
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader) {
-      console.error('Authorization header not found')
+    const user = await getCurrentUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const token = authHeader.split(' ')[1]
-    if (!token) {
-      console.error('Token not found in Authorization header')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = Number(getUserIdFromToken(token))
-    if (!userId) {
-      console.error('Invalid token or user ID not found')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!canTeach(user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const url = new URL(request.url)
     const showUnpublished = url.searchParams.get('unpublished') === 'true'
 
-    await prisma.$connect()
     const courses = await prisma.course.findMany({
       where: {
-        instructorId: userId,
+        instructorId: user.id,
         ...(showUnpublished ? {} : { published: true })
       },
       orderBy: {
         createdAt: 'desc'
       }
     })
-    console.log('Fetched courses:', courses)
 
     return NextResponse.json(courses)
   } catch (error) {
@@ -44,7 +33,5 @@ export async function GET(request: Request) {
       { error: 'Failed to fetch courses' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }
