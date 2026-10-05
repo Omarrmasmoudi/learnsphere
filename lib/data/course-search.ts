@@ -1,8 +1,12 @@
 import type { Course, Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import {
+  COURSE_SORTS,
+  type CourseFilterOptions,
+  type CourseSort,
+} from '@/lib/utils/course-filters'
 
-export const COURSE_SORTS = ['newest', 'price-asc', 'price-desc', 'rating'] as const
-export type CourseSort = (typeof COURSE_SORTS)[number]
+export { COURSE_SORTS, type CourseFilterOptions, type CourseSort }
 
 export const MAX_QUERY_LENGTH = 100
 export const MAX_PAGE_SIZE = 100
@@ -27,12 +31,6 @@ export type CourseWithRating = Course & {
 export interface CourseSearchResult {
   courses: CourseWithRating[]
   total: number
-}
-
-export interface CourseFilterOptions {
-  categories: string[]
-  levels: string[]
-  price: { min: number; max: number }
 }
 
 type RawParams = URLSearchParams | Record<string, string | string[] | undefined>
@@ -94,7 +92,10 @@ export function buildCourseWhere(params: CourseSearchParams): Prisma.CourseWhere
   const where: Prisma.CourseWhereInput = { published: true }
 
   if (params.q) {
-    const contains = { contains: params.q, mode: 'insensitive' as const }
+    // Prisma passes `contains` straight into ILIKE, so escape its wildcards
+    // to make "%" or "_" match literally
+    const term = params.q.replace(/[\\%_]/g, '\\$&')
+    const contains = { contains: term, mode: 'insensitive' as const }
     where.OR = [
       { title: contains },
       { description: contains },
