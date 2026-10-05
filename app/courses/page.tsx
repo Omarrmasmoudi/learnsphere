@@ -1,94 +1,57 @@
-import { CoursesNav } from '@/components/courses/courses-nav'
-import { CourseCard } from '@/components/courses/course-card'
-import { CourseFilters } from '@/components/courses/course-filters'
-import { Course } from '@/lib/types/course'
 import { Suspense } from 'react'
+import { CoursesNav } from '@/components/courses/courses-nav'
+import { CourseFilters } from '@/components/courses/course-filters'
+import { CourseResults, CourseResultsSkeleton } from '@/components/courses/course-results'
+import { getCourseFilterOptions, parseCourseSearchParams } from '@/lib/data/course-search'
+import type { CourseFilterOptions } from '@/lib/utils/course-filters'
 
-export default async function CoursesPage() {
+const PAGE_SIZE = 12
+
+interface CoursesPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function CoursesPage({ searchParams }: CoursesPageProps) {
+  const rawParams = await searchParams
+  const parsed = parseCourseSearchParams(rawParams)
+  const params = { ...parsed, page: parsed.page ?? 1, limit: PAGE_SIZE }
+
+  // Canonical query string: identifies the result set and keeps the filters
+  // in pagination links
+  const query = new URLSearchParams(
+    Object.entries(rawParams).flatMap(([key, value]) =>
+      value === undefined ? [] : [[key, Array.isArray(value) ? value[0] : value]]
+    )
+  ).toString()
+
+  let filterOptions: CourseFilterOptions = { categories: [], levels: [], price: { min: 0, max: 0 } }
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/courses`, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
-    const contentType = response.headers.get('content-type')
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error('server response not JSON')
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      console.error('API Error:', errorData)
-      throw new Error('Failed to fetch courses: ${response.statusText}')
-    }
-
-    const courses = await response.json() as Course[]
-
-    if (!courses.length) {
-      console.error('Error:', Error)
-      return (
-        <div className="min-h-screen bg-black">
-          <CoursesNav />
-          <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
-            <p className="text-white text-xl">No courses available yet</p>
-          </div>
-        </div>
-      )
-    }
-
-    return (
-      <div className="min-h-screen bg-black">
-        <CoursesNav />
-        <div className="flex pt-16">
-          <aside className="w-[250px] fixed left-0 top-16 bottom-0 bg-black border-r border-purple-500/20 overflow-y-auto z-40">
-            <CourseFilters />
-          </aside>
-          
-          <main className="flex-1 ml-[250px] p-8">
-            <Suspense fallback={<div className="text-white">Loading courses...</div>}>
-              <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-8">
-                  Courses to get you started
-                </h1>
-  
-                <section className="mb-12">
-                  <h2 className="text-2xl font-semibold text-white mb-6">
-                    Recommended For You
-                  </h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {courses.slice(0, 4).map((course) => (
-                      <CourseCard key={course.id} course={course} />
-                    ))}
-                  </div>
-                </section>
-    
-                <section>
-                  <h2 className="text-2xl font-semibold text-white mb-6">
-                    Most Popular Courses
-                  </h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {courses.slice(4, 6).map((course) => (
-                      <CourseCard key={course.id} course={course} />
-                    ))}
-                  </div>
-                </section>
-              </div>
-            </Suspense>
-          </main>
-        </div>
-      </div>
-    )
+    filterOptions = await getCourseFilterOptions()
   } catch (error) {
-    console.error('Error:', error)
-    return (
-      <div className="min-h-screen bg-black">
-        <CoursesNav />
-        <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
-          <p className="text-red-500 text-xl">Something went wrong. Please try again later.</p>
-        </div>
-      </div>
-    )
+    // Results render their own error; the sidebar still works without options
+    console.error('Error fetching course filters:', error)
   }
+
+  const heading = params.q ? `Results for "${params.q}"` : 'Courses to get you started'
+
+  return (
+    <div className="min-h-screen bg-black">
+      <CoursesNav />
+      <div className="flex flex-col md:flex-row pt-16">
+        <aside className="w-full border-b md:w-[250px] md:fixed md:left-0 md:top-16 md:bottom-0 md:border-b-0 md:border-r bg-black border-purple-500/20 md:overflow-y-auto md:z-40">
+          <CourseFilters options={filterOptions} />
+        </aside>
+
+        <main className="flex-1 md:ml-[250px] p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            <h1 className="text-3xl font-bold text-white mb-2 break-words">{heading}</h1>
+            {/* Re-keying on the query shows the skeleton while new results load */}
+            <Suspense key={query} fallback={<CourseResultsSkeleton />}>
+              <CourseResults params={params} query={query} />
+            </Suspense>
+          </div>
+        </main>
+      </div>
+    </div>
+  )
 }
