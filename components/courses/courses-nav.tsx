@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { CourseSearchInput } from '@/components/courses/course-search-input'
 
 export function CoursesNav() {
   return (
@@ -20,14 +19,10 @@ export function CoursesNav() {
         </Link>
         
         <div className="hidden md:flex flex-1 max-w-xl mx-8">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="search"
-              placeholder="Search for courses..."
-              className="w-full pl-10 bg-gray-50 border-gray-200 focus:border-purple-500"
-            />
-          </div>
+          <CourseSearchInput
+            className="w-full"
+            inputClassName="bg-gray-50 border-gray-200 focus:border-purple-500"
+          />
         </div>
 
         <div className="flex items-center gap-4">
