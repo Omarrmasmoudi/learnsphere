@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/action/auth'
 
 export async function GET(
   request: Request,
@@ -14,8 +15,7 @@ export async function GET(
         instructor: {
           select: {
             id: true,
-            name: true,
-            email: true
+            name: true
           }
         },
         _count: {
@@ -23,6 +23,15 @@ export async function GET(
         }
       }
     })
+
+    // Drafts are visible only to their author and admins; everyone else gets the same 404
+    // as a missing course, so draft ids can't be probed.
+    if (course && !course.published) {
+      const user = await getCurrentUser()
+      if (!user || (user.id !== course.instructorId && user.role !== 'ADMIN')) {
+        return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+      }
+    }
 
     if (!course) {
       return NextResponse.json(
