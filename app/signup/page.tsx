@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SphereBackground } from '../../components/sphere-background'
 import Link from 'next/link'
+import { COUNTRIES } from '@/lib/data/countries'
 
 
 export default function SignUpPage() {
@@ -17,9 +18,6 @@ export default function SignUpPage() {
   const [name, setName] = useState('')
   const [age,setAge] = useState('')
   const [location, setLocation] = useState('')
-  const [countries] = useState<string[]>([
-    "United States", "Canada", "United Kingdom", "Australia", "Germany", "France", "India", "China", "Japan", "Brazil", "South Africa", "Egypt", "Saudi Arabia", "Turkey", "Russia", "Italy", "Spain", "Mexico", "Argentina", "Nigeria", "Kenya", "South Korea", "Indonesia", "Pakistan", "Bangladesh", "Vietnam", "Philippines", "Thailand", "Malaysia", "Singapore", "New Zealand", "Sweden", "Norway", "Denmark", "Finland", "Poland", "Netherlands", "Belgium", "Switzerland", "Austria", "Portugal", "Greece", "Ireland", "Czech Republic", "Hungary", "Romania", "Ukraine", "Chile", "Colombia", "Peru", "Venezuela", "Morocco", "Algeria", "Tunisia", "Israel", "UAE", "Qatar", "Kuwait", "Oman", "Jordan", "Lebanon", "Iraq", "Iran", "Afghanistan", "Syria", "Yemen", "Sudan", "Ethiopia", "Tanzania", "Uganda", "Ghana", "Ivory Coast", "Cameroon", "Senegal", "Angola", "Mozambique", "Zimbabwe", "Zambia", "Botswana", "Namibia", "Madagascar", "Mali", "Burkina Faso", "Niger", "Guinea", "Rwanda", "Burundi", "Benin", "Chad", "Somalia", "Libya", "Congo", "DR Congo", "Central African Republic", "Gabon", "Equatorial Guinea", "Sierra Leone", "Liberia", "Togo", "Eritrea", "Mauritania", "Gambia", "Lesotho", "Eswatini", "Malawi", "Cape Verde", "Seychelles", "Comoros", "Sao Tome and Principe"
-  ])
   const [interests, setInterests] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -31,8 +29,6 @@ export default function SignUpPage() {
     event.preventDefault()
     setError('')
     setSuccess('')
-    const requestData = { email, password, name, age: Number(age), location, interests }
-    console.log('Sending data:', requestData)
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -166,7 +162,7 @@ export default function SignUpPage() {
                 <option value="" disabled>
                   Select your country
                 </option>
-                {countries.map((country) => (
+                {COUNTRIES.map((country) => (
                   <option key={country} value={country}>
                     {country}
                   </option>
