@@ -3,7 +3,6 @@
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Clock, GraduationCap, Languages, Medal, PlayCircle, User } from 'lucide-react'
@@ -35,7 +34,6 @@ export default function CourseDetailsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black">
-        <NavBar />
         <div className="pt-24 text-center text-white">
           Loading...
         </div>
@@ -46,7 +44,6 @@ export default function CourseDetailsPage() {
   if (!course) {
     return (
       <div className="min-h-screen bg-black">
-        <NavBar />
         <div className="pt-24 text-center text-white">
           <h1 className="text-2xl font-bold">Course not found</h1>
           <Link href="/courses" className="text-purple-500 hover:text-purple-400">
@@ -59,7 +56,6 @@ export default function CourseDetailsPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <NavBar />
       
       <main className="pt-16">
         <div className="relative bg-purple-900/20 border-b border-purple-500/20">

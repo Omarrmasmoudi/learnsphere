@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { NavBar } from "@/components/layout/nav-bar"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CourseCard } from '@/components/courses/course-card'
@@ -49,7 +48,6 @@ export default function TeacherLandingPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-black">
-        <NavBar />
         <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
           <p className="text-white text-xl">Loading courses...</p>
         </div>
@@ -60,7 +58,6 @@ export default function TeacherLandingPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-black">
-        <NavBar />
         <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
           <p className="text-red-500 text-xl">Something went wrong. Please try again later.</p>
         </div>
@@ -71,7 +68,6 @@ export default function TeacherLandingPage() {
   if (!courses.length) {
     return (
       <div className="page-container">
-        <NavBar />
         <main className="container-padding pt-24">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <h1 className="heading-1">Welcome to Teacher Portal</h1>
@@ -118,7 +114,6 @@ export default function TeacherLandingPage() {
 
   return (
     <div className="page-container">
-      <NavBar />
       <main className="container-padding pt-24">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h1 className="heading-1">Welcome to Teacher Portal</h1>

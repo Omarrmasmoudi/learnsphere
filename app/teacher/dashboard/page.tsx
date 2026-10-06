@@ -1,6 +1,5 @@
 "use client"
 
-import { NavBar } from "@/components/layout/nav-bar"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
@@ -36,7 +35,6 @@ const enrollmentData = [
 export default function TeacherDashboard() {
   return (
     <div className="page-container">
-      <NavBar />
       <main className="container-padding pt-24">
         <div className="flex justify-between items-center mb-8">
           <h1 className="heading-1 mb-0">Teacher Dashboard</h1>

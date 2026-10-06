@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { NavBar } from "@/components/layout/nav-bar"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -97,7 +96,6 @@ export default function CreateCoursePage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      <NavBar />
       <main className="pt-24 px-4 pb-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-bold text-white mb-8">Create New Course</h1>
