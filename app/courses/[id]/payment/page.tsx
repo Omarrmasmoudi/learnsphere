@@ -1,16 +1,42 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { courses } from '@/lib/data/courses'
+
+interface CheckoutCourse {
+  id: string
+  title: string
+  image: string | null
+  price: number
+  instructorName: string
+}
 
 export default function PaymentPage() {
-  const params = useParams()
-  const course = courses.find(c => c.id === params.id)
+  const params = useParams<{ id: string }>()
+  const [course, setCourse] = useState<CheckoutCourse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // The course API hides drafts from everyone but their author, so checkout does too
+    fetch(`/api/courses/${params.id}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then(setCourse)
+      .catch(() => setCourse(null))
+      .finally(() => setIsLoading(false))
+  }, [params.id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black">
+        <div className="pt-24 text-center text-white">Loading...</div>
+      </div>
+    )
+  }
 
   if (!course) {
     return (
@@ -153,7 +179,7 @@ export default function PaymentPage() {
                   <div className="relative aspect-video rounded-lg overflow-hidden bg-purple-800/20 mb-6">
                     <Image
                       src={course.image || "/placeholder.svg"}
-                      alt={course.title ?? "Course thumbnail"}
+                      alt={course.title}
                       fill
                       className="object-cover"
                     />
