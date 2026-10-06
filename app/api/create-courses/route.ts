@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/action/auth'
 import { canTeach } from '@/lib/auth/roles'
+import { parseSections, sectionsCreateInput } from '@/lib/course-sections'
 
 export async function POST(request: Request) {
   try {
@@ -21,13 +22,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    interface VideoInput {
-      title: string;
-      url: string;
-    }
-    interface SectionInput {
-      title: string;
-      videos?: VideoInput[];
+    const parsedSections = sections === undefined ? [] : parseSections(sections)
+    if (typeof parsedSections === 'string') {
+      return NextResponse.json({ error: parsedSections }, { status: 400 })
     }
 
     // Create course with sections if provided
@@ -44,14 +41,7 @@ export async function POST(request: Request) {
         instructorName: user.name,
         instructorId: user.id,
         published: published || false,
-        sections: sections ? {
-          create: sections.map((section: SectionInput) => ({
-            title: section.title,
-            videos: {
-              create: section.videos
-            }
-          }))
-        } : undefined
+        sections: { create: sectionsCreateInput(parsedSections) }
       },
       include: {
         sections: true

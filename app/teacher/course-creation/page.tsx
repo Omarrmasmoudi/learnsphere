@@ -7,17 +7,16 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { FileUpload } from "@/components/teacher/file-upload"
+import {
+  SectionsEditor,
+  emptySection,
+  sectionsError,
+  toSectionsPayload,
+  type EditableSection,
+} from "@/components/teacher/sections-editor"
 
-interface Section {
-  title: string
-  videos: Array<{
-    title: string
-    url: string
-  }>
-}
 interface CourseFormData {
   title: string
   description: string
@@ -25,7 +24,6 @@ interface CourseFormData {
   level: string
   price: number
   image: string
-  sections: Section[]
 }
 
 export default function CreateCoursePage() {
@@ -41,16 +39,11 @@ export default function CreateCoursePage() {
     level: "",
     price: 0,
     image: "",
-    sections: [
-      {
-        title: "",
-        videos: [{ title: "", url: "" }],
-      },
-    ]
   })
+  const [sections, setSections] = useState<EditableSection[]>(() => [emptySection()])
 
   // A validation message is stale as soon as the form changes
-  useEffect(() => setError(""), [formData])
+  useEffect(() => setError(""), [formData, sections])
 
   const handleSubmit = async (isDraft: boolean = false) => {
     setError("")
@@ -58,11 +51,9 @@ export default function CreateCoursePage() {
       setError("Title, description and price are required.")
       return
     }
-    const missingVideo = formData.sections
-      .flatMap((section) => section.videos)
-      .find((video) => !video.url)
-    if (missingVideo) {
-      setError(`Upload a file for "${missingVideo.title || "Untitled video"}" or remove it.`)
+    const invalidSections = sectionsError(sections)
+    if (invalidSections) {
+      setError(invalidSections)
       return
     }
 
@@ -76,6 +67,7 @@ export default function CreateCoursePage() {
         },
         body: JSON.stringify({
           ...formData,
+          sections: toSectionsPayload(sections),
           published: !isDraft
         }),
       })
@@ -101,25 +93,6 @@ export default function CreateCoursePage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const addSection = () => {
-    setFormData({
-      ...formData,
-      sections: [...formData.sections, { title: "", videos: [] }]
-    })
-  }
-
-  const addVideo = (sectionIndex: number) => {
-    const newSections = [...formData.sections]
-    newSections[sectionIndex].videos.push({ title: "", url: "" })
-    setFormData({ ...formData, sections: newSections })
-  }
-
-  const deleteSection = (sectionIndex: number) => {
-    const newSections = [...formData.sections]
-    newSections.splice(sectionIndex, 1)
-    setFormData({ ...formData, sections: newSections })
   }
 
   return (
@@ -207,89 +180,7 @@ export default function CreateCoursePage() {
             <Card className="border border-gray-700 bg-gray-800 shadow-lg">
               <div className="p-6">
                 <h2 className="text-2xl font-semibold text-white mb-6">Course Content</h2>
-                <div className="space-y-6">
-                  {formData.sections.map((section, sectionIndex) => (
-                    <div key={sectionIndex} className="space-y-4">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <label className="text-sm font-medium text-gray-300">Section Title</label>
-                          <Input
-                            className="bg-gray-700 border-gray-600 text-white mt-1"
-                            placeholder={`Section ${sectionIndex + 1} title`}
-                            value={section.title}
-                            onChange={(e) => {
-                              const newSections = [...formData.sections]
-                              newSections[sectionIndex].title = e.target.value
-                              setFormData({ ...formData, sections: newSections })
-                            }}
-                          />
-                        </div>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="mt-7"
-                          onClick={() => deleteSection(sectionIndex)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-
-                      <div className="space-y-4 pl-6">
-                        {section.videos.map((video, videoIndex) => (
-                          <div key={videoIndex} className="grid gap-4">
-                            <div className="flex gap-4">
-                              <Input
-                                className="bg-gray-700 border-gray-600 text-white"
-                                placeholder="Video title"
-                                value={video.title}
-                                onChange={(e) => {
-                                  const newSections = [...formData.sections]
-                                  newSections[sectionIndex].videos[videoIndex].title = e.target.value
-                                  setFormData({ ...formData, sections: newSections })
-                                }}
-                              />
-                              <Button
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => {
-                                  const newSections = [...formData.sections]
-                                  newSections[sectionIndex].videos.splice(videoIndex, 1)
-                                  setFormData({ ...formData, sections: newSections })
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                            <FileUpload
-                              endpoint="courseVideo"
-                              value={video.url}
-                              onChange={(url) =>
-                                setFormData((current) => ({
-                                  ...current,
-                                  sections: current.sections.map((s, si) =>
-                                    si !== sectionIndex ? s : {
-                                      ...s,
-                                      videos: s.videos.map((v, vi) => (vi !== videoIndex ? v : { ...v, url })),
-                                    }
-                                  ),
-                                }))
-                              }
-                              onUploadingChange={trackUpload}
-                            />
-                          </div>
-                        ))}
-                        <Button variant="outline" onClick={() => addVideo(sectionIndex)}>
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Video
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" onClick={addSection}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Section
-                  </Button>
-                </div>
+                <SectionsEditor sections={sections} setSections={setSections} onUploadingChange={trackUpload} />
               </div>
             </Card>
 

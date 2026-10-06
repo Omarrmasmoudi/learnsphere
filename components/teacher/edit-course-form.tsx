@@ -8,6 +8,14 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  SectionsEditor,
+  sectionsError,
+  toEditableSections,
+  toSectionsPayload,
+  type EditableSection,
+} from '@/components/teacher/sections-editor'
+import type { SectionInput } from '@/lib/course-sections'
 
 // Same options as the course creation form
 const CATEGORIES = [
@@ -38,12 +46,14 @@ interface EditCourseFormProps {
     price: number
     published: boolean
   }
-  sections: { id: number; title: string; videoCount: number }[]
+  sections: SectionInput[]
 }
 
-export function EditCourseForm({ course, sections }: EditCourseFormProps) {
+export function EditCourseForm({ course, sections: initialSections }: EditCourseFormProps) {
   const router = useRouter()
   const [form, setForm] = useState({ ...course, price: String(course.price) })
+  const [sections, setSectionsState] = useState<EditableSection[]>(() => toEditableSections(initialSections))
+  const [uploadsInProgress, setUploadsInProgress] = useState(0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
@@ -52,6 +62,12 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
     setForm({ ...form, ...changes })
     setSaved(false)
   }
+  const setSections: typeof setSectionsState = (value) => {
+    setSectionsState(value)
+    setSaved(false)
+    setError('')
+  }
+  const trackUpload = (uploading: boolean) => setUploadsInProgress((n) => n + (uploading ? 1 : -1))
 
   const handleSave = async () => {
     setError('')
@@ -62,6 +78,11 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
     }
     if (form.price.trim() === '' || !Number.isInteger(price) || price < 0) {
       setError('Price must be a whole number of dollars, 0 or more.')
+      return
+    }
+    const invalidSections = sectionsError(sections)
+    if (invalidSections) {
+      setError(invalidSections)
       return
     }
 
@@ -77,6 +98,7 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
           level: form.level || null,
           price,
           published: form.published,
+          sections: toSectionsPayload(sections),
         }),
       })
       if (response.status === 401) {
@@ -87,6 +109,10 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
         const data = await response.json().catch(() => ({}))
         throw new Error(data.error || 'Failed to save changes')
       }
+      // Pick up ids for newly created sections and videos, so a second save updates them
+      // instead of creating duplicates
+      const updated: { sections: SectionInput[] } = await response.json()
+      setSectionsState(toEditableSections(updated.sections))
       setSaved(true)
       router.refresh()
     } catch (err) {
@@ -157,30 +183,11 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
         </div>
       </Card>
 
-      {/* Course Content (read-only: the API does not edit sections yet) */}
+      {/* Course Content */}
       <Card className="border border-gray-700 bg-gray-800 shadow-lg">
         <div className="p-6">
-          <h2 className="text-2xl font-semibold text-white mb-2">Course Content</h2>
-          <p className="text-sm text-gray-400 mb-6">Sections can&apos;t be edited after creation yet.</p>
-          {sections.length === 0 ? (
-            <p className="text-gray-300">This course has no sections.</p>
-          ) : (
-            <ol className="space-y-3">
-              {sections.map((section, index) => (
-                <li
-                  key={section.id}
-                  className="flex items-center justify-between rounded-md border border-gray-700 px-4 py-3"
-                >
-                  <span className="text-white">
-                    {index + 1}. {section.title || 'Untitled section'}
-                  </span>
-                  <span className="text-sm text-gray-400">
-                    {section.videoCount} {section.videoCount === 1 ? 'video' : 'videos'}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          )}
+          <h2 className="text-2xl font-semibold text-white mb-6">Course Content</h2>
+          <SectionsEditor sections={sections} setSections={setSections} onUploadingChange={trackUpload} />
         </div>
       </Card>
 
@@ -218,6 +225,7 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
       <div className="flex items-center justify-end gap-4">
         {error && <p className="text-sm text-red-500">{error}</p>}
         {saved && <p className="text-sm text-green-400">Changes saved.</p>}
+        {uploadsInProgress > 0 && <p className="text-sm text-gray-400">Waiting for uploads to finish...</p>}
         <Button
           variant="outline"
           className="text-white border-gray-600 hover:bg-gray-700"
@@ -229,7 +237,7 @@ export function EditCourseForm({ course, sections }: EditCourseFormProps) {
         <Button
           className="bg-purple-500 text-white hover:bg-purple-600"
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || uploadsInProgress > 0}
         >
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>

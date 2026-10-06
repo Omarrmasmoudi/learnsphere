@@ -22,7 +22,11 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
       instructorId: true,
       sections: {
         orderBy: { id: 'asc' },
-        select: { id: true, title: true, _count: { select: { videos: true } } }
+        select: {
+          id: true,
+          title: true,
+          videos: { orderBy: { id: 'asc' }, select: { id: true, title: true, url: true } }
+        }
       }
     }
   })
@@ -48,11 +52,7 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
               price: course.price,
               published: course.published,
             }}
-            sections={course.sections.map((section) => ({
-              id: section.id,
-              title: section.title,
-              videoCount: section._count.videos,
-            }))}
+            sections={course.sections}
           />
         </div>
       </main>
