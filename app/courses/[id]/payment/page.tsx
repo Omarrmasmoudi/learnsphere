@@ -156,7 +156,7 @@ export default function PaymentPage() {
                   <div className="relative aspect-video rounded-lg overflow-hidden bg-purple-800/20 mb-6">
                     <Image
                       src={course.image || "/placeholder.svg"}
-                      alt={course.title}
+                      alt={course.title ?? "Course thumbnail"}
                       fill
                       className="object-cover"
                     />
