@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { CourseFeedback } from '@/components/courses/course-feedback'
 import { Clock, GraduationCap, Languages, Medal, PlayCircle, User } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Course } from '@prisma/client'
@@ -197,6 +198,7 @@ export default function CourseDetailsPage() {
                   </li>
                 </ul>
               </section>
+              <CourseFeedback courseId={course.id} />
             </div>
           </div>
         </div>

@@ -8,23 +8,24 @@ datasource db {
 }
 
 model User {
-  id             Int          @id @default(autoincrement())
-  email          String       @unique
+  id             Int              @id @default(autoincrement())
+  email          String           @unique
   name           String
   password       String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  admin          Admin?       @relation("UserAdmin")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  admin          Admin?           @relation("UserAdmin")
   enrollments    Enrollment[]
-  teacher        Teacher?     @relation("UserTeacher")
-  createdCourses Course[]     @relation("createdCourses")
+  teacher        Teacher?         @relation("UserTeacher")
+  createdCourses Course[]         @relation("createdCourses")
   age            Int?
   location       String?
   gender         String?
   interests      String?
   lastLogin      DateTime?
-  watchHistory   String[] 
-  ratings        Rating[]     @relation("UserRatings")
+  watchHistory   String[]
+  ratings        Rating[]         @relation("UserRatings")
+  feedback       CourseFeedback[]
 }
 
 model Rating {
@@ -38,7 +39,7 @@ model Rating {
 }
 
 model Course {
-  id             String       @id @default(uuid())
+  id             String           @id @default(uuid())
   title          String
   description    String?
   price          Int
@@ -46,19 +47,40 @@ model Course {
   category       String?
   duration       String?
   level          String?
-  priceRange     String?      @default("$40-$100")
-  createdAt      DateTime     @default(now())
+  priceRange     String?          @default("$40-$100")
+  createdAt      DateTime         @default(now())
   instructorId   Int
   instructorName String
-  published      Boolean      @default(false)
-  updatedAt      DateTime     @updatedAt
+  published      Boolean          @default(false)
+  updatedAt      DateTime         @updatedAt
   video          String?
   enrollments    Enrollment[]
-  instructor     User         @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
+  instructor     User             @relation("createdCourses", fields: [instructorId], references: [id], onDelete: Cascade)
   sections       Section[]
   Rating         Rating[]
+  feedback       CourseFeedback[]
 
   @@map("courses")
+}
+
+// Written feedback or a voice note, scored 1–5 stars by sentiment-service/
+model CourseFeedback {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  courseId   String
+  text       String // typed text, or the transcript of a voice note
+  source     String   @default("TEXT") // TEXT or VOICE
+  stars      Int
+  confidence Float
+  scores     Float[] // probability of each rating, index 0 = 1 star
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+  @@map("course_feedback")
 }
 
 model Enrollment {

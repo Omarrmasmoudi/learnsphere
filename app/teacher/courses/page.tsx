@@ -33,10 +33,13 @@ export default async function TeacherCoursesPage() {
             <div key={course.id} className="border p-4 rounded shadow">
               <h2 className="font-semibold">{course.title}</h2>
               <p className="text-gray-600">{course.description}</p>
-              <div className="mt-2">
+              <div className="mt-2 flex items-center gap-4">
                 <span className="text-sm bg-gray-100 px-2 py-1 rounded">
                   {course.published ? 'Published' : 'Draft'}
                 </span>
+                <Link href={`/teacher/courses/${course.id}/feedback`} className="text-sm text-blue-500 hover:underline">
+                  Student feedback
+                </Link>
               </div>
             </div>
           ))
