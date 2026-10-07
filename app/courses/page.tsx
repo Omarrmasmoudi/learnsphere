@@ -1,4 +1,3 @@
-import { CoursesNav } from '@/components/courses/courses-nav'
 import { CourseCard } from '@/components/courses/course-card'
 import { CourseFilters } from '@/components/courses/course-filters'
 import { Course } from '@/lib/types/course'
@@ -30,7 +29,6 @@ export default async function CoursesPage() {
       console.error('Error:', Error)
       return (
         <div className="min-h-screen bg-black">
-          <CoursesNav />
           <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
             <p className="text-white text-xl">No courses available yet</p>
           </div>
@@ -40,7 +38,6 @@ export default async function CoursesPage() {
 
     return (
       <div className="min-h-screen bg-black">
-        <CoursesNav />
         <div className="flex pt-16">
           <aside className="w-[250px] fixed left-0 top-16 bottom-0 bg-black border-r border-purple-500/20 overflow-y-auto z-40">
             <CourseFilters />
@@ -84,7 +81,6 @@ export default async function CoursesPage() {
     console.error('Error:', error)
     return (
       <div className="min-h-screen bg-black">
-        <CoursesNav />
         <div className="flex justify-center items-center h-[calc(100vh-4rem)]">
           <p className="text-red-500 text-xl">Something went wrong. Please try again later.</p>
         </div>

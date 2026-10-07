@@ -1,22 +1,46 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { NavBar } from '@/components/layout/nav-bar'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { courses } from '@/lib/data/courses'
+
+interface CheckoutCourse {
+  id: string
+  title: string
+  image: string | null
+  price: number
+  instructorName: string
+}
 
 export default function PaymentPage() {
-  const params = useParams()
-  const course = courses.find(c => c.id === params.id)
+  const params = useParams<{ id: string }>()
+  const [course, setCourse] = useState<CheckoutCourse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // The course API hides drafts from everyone but their author, so checkout does too
+    fetch(`/api/courses/${params.id}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then(setCourse)
+      .catch(() => setCourse(null))
+      .finally(() => setIsLoading(false))
+  }, [params.id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black">
+        <div className="pt-24 text-center text-white">Loading...</div>
+      </div>
+    )
+  }
 
   if (!course) {
     return (
       <div className="min-h-screen bg-black">
-        <NavBar />
         <div className="pt-24 text-center text-white">
           <h1 className="text-2xl font-bold">Course not found</h1>
           <Link href="/courses" className="text-purple-500 hover:text-purple-400">
@@ -29,7 +53,6 @@ export default function PaymentPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <NavBar />
       
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">

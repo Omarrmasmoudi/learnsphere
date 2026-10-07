@@ -14,7 +14,7 @@ export default async function TeacherCoursesPage() {
   const courses: Course[] = await getTeacherCourses()
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 pt-24">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">My Courses</h1>
         <Link 

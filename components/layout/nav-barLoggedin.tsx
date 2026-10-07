@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -66,6 +68,14 @@ export function NavBarL({ user }: NavBarLProps) {
         {/* User Info */}
         <div className="flex items-center gap-4">
           <span className="text-gray-300">Welcome, {user.name}</span>
+          <Link href="/profile">
+            <Button
+              variant="ghost"
+              className="text-gray-300 hover:text-white hover:bg-purple-500/10"
+            >
+              Profile
+            </Button>
+          </Link>
             <Button className="bg-purple-500 text-white hover:bg-purple-600" onClick={handleLogout}>
               Logout
             </Button>

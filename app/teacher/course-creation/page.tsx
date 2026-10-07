@@ -1,22 +1,21 @@
 "use client"
 
-import { useState } from "react"
-import { NavBar } from "@/components/layout/nav-bar"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ImagePlus, Plus, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { FileUpload } from "@/components/teacher/file-upload"
+import {
+  SectionsEditor,
+  emptySection,
+  sectionsError,
+  toSectionsPayload,
+  type EditableSection,
+} from "@/components/teacher/sections-editor"
 
-interface Section {
-  title: string
-  videos: Array<{
-    title: string
-    url: string
-  }>
-}
 interface CourseFormData {
   title: string
   description: string
@@ -24,12 +23,14 @@ interface CourseFormData {
   level: string
   price: number
   image: string
-  sections: Section[]
 }
 
 export default function CreateCoursePage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [uploadsInProgress, setUploadsInProgress] = useState(0)
+  const [error, setError] = useState("")
+  const trackUpload = (uploading: boolean) => setUploadsInProgress((n) => n + (uploading ? 1 : -1))
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
     description: "",
@@ -37,15 +38,24 @@ export default function CreateCoursePage() {
     level: "",
     price: 0,
     image: "",
-    sections: [
-      {
-        title: "",
-        videos: [{ title: "", url: "" }],
-      },
-    ]
   })
+  const [sections, setSections] = useState<EditableSection[]>(() => [emptySection()])
+
+  // A validation message is stale as soon as the form changes
+  useEffect(() => setError(""), [formData, sections])
 
   const handleSubmit = async (isDraft: boolean = false) => {
+    setError("")
+    if (!formData.title.trim() || !formData.description.trim() || !formData.price) {
+      setError("Title, description and price are required.")
+      return
+    }
+    const invalidSections = sectionsError(sections)
+    if (invalidSections) {
+      setError(invalidSections)
+      return
+    }
+
     try {
       setIsLoading(true)
   
@@ -56,6 +66,7 @@ export default function CreateCoursePage() {
         },
         body: JSON.stringify({
           ...formData,
+          sections: toSectionsPayload(sections),
           published: !isDraft
         }),
       })
@@ -69,52 +80,22 @@ export default function CreateCoursePage() {
           router.push('/become-teacher')
           return
         }
-        throw new Error('Failed to create course')
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to create course')
       }
   
       const course = await response.json()
       router.push(`/courses/${course.id}`)
     } catch (error) {
       console.error('Error creating course:', error)
+      setError((error as Error).message)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const addSection = () => {
-    setFormData({
-      ...formData,
-      sections: [...formData.sections, { title: "", videos: [] }]
-    })
-  }
-
-  const addVideo = (sectionIndex: number) => {
-    const newSections = [...formData.sections]
-    newSections[sectionIndex].videos.push({ title: "", url: "" })
-    setFormData({ ...formData, sections: newSections })
-  }
-
-  const deleteSection = (sectionIndex: number) => {
-    const newSections = [...formData.sections]
-    newSections.splice(sectionIndex, 1)
-    setFormData({ ...formData, sections: newSections })
-  }
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, sectionIndex: number, videoIndex: number) => {
-    const file = e.target.files?.[0]
-    if (file) {
-// Implement file upload logic here
-// Example: const url = await uploadFile(file)
-      const url = 'uploaded-file-url' // Replace with actual upload logic
-      const newSections = [...formData.sections]
-      newSections[sectionIndex].videos[videoIndex].url = url
-      setFormData({ ...formData, sections: newSections })
-    }
-  }
-
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      <NavBar />
       <main className="pt-24 px-4 pb-8">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-bold text-white mb-8">Create New Course</h1>
@@ -180,11 +161,13 @@ export default function CreateCoursePage() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-300">Course Thumbnail</label>
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center mt-1">
-                      <Button variant="outline" className="text-white border-gray-600 hover:bg-gray-700">
-                        <ImagePlus className="w-4 h-4 mr-2" />
-                        Upload Thumbnail
-                      </Button>
+                    <div className="mt-1">
+                      <FileUpload
+                        endpoint="courseImage"
+                        value={formData.image}
+                        onChange={(url) => setFormData((current) => ({ ...current, image: url }))}
+                        onUploadingChange={trackUpload}
+                      />
                     </div>
                   </div>
                 </div>
@@ -195,79 +178,7 @@ export default function CreateCoursePage() {
             <Card className="border border-gray-700 bg-gray-800 shadow-lg">
               <div className="p-6">
                 <h2 className="text-2xl font-semibold text-white mb-6">Course Content</h2>
-                <div className="space-y-6">
-                  {formData.sections.map((section, sectionIndex) => (
-                    <div key={sectionIndex} className="space-y-4">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <label className="text-sm font-medium text-gray-300">Section Title</label>
-                          <Input
-                            className="bg-gray-700 border-gray-600 text-white mt-1"
-                            placeholder={`Section ${sectionIndex + 1} title`}
-                            value={section.title}
-                            onChange={(e) => {
-                              const newSections = [...formData.sections]
-                              newSections[sectionIndex].title = e.target.value
-                              setFormData({ ...formData, sections: newSections })
-                            }}
-                          />
-                        </div>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="mt-7"
-                          onClick={() => deleteSection(sectionIndex)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-
-                      <div className="space-y-4 pl-6">
-                        {section.videos.map((video, videoIndex) => (
-                          <div key={videoIndex} className="grid gap-4">
-                            <div className="flex gap-4">
-                              <Input
-                                className="bg-gray-700 border-gray-600 text-white"
-                                placeholder="Video title"
-                                value={video.title}
-                                onChange={(e) => {
-                                  const newSections = [...formData.sections]
-                                  newSections[sectionIndex].videos[videoIndex].title = e.target.value
-                                  setFormData({ ...formData, sections: newSections })
-                                }}
-                              />
-                              <Button
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => {
-                                  const newSections = [...formData.sections]
-                                  newSections[sectionIndex].videos.splice(videoIndex, 1)
-                                  setFormData({ ...formData, sections: newSections })
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                            <Input 
-                              type="file" 
-                              accept="video/*" 
-                              className="bg-gray-700 border-gray-600 text-white"
-                              onChange={(e) => handleFileUpload(e, sectionIndex, videoIndex)}
-                            />
-                          </div>
-                        ))}
-                        <Button variant="outline" onClick={() => addVideo(sectionIndex)}>
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Video
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" onClick={addSection}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Section
-                  </Button>
-                </div>
+                <SectionsEditor sections={sections} setSections={setSections} onUploadingChange={trackUpload} />
               </div>
             </Card>
 
@@ -288,19 +199,21 @@ export default function CreateCoursePage() {
               </div>
             </Card>
 
-            <div className="flex justify-end gap-4">
+            <div className="flex items-center justify-end gap-4">
+              {error && <p className="text-sm text-red-500">{error}</p>}
+              {uploadsInProgress > 0 && <p className="text-sm text-gray-400">Waiting for uploads to finish...</p>}
               <Button 
                 variant="outline" 
                 className="text-white border-gray-600 hover:bg-gray-700"
                 onClick={() => handleSubmit(true)}
-                disabled={isLoading}
+                disabled={isLoading || uploadsInProgress > 0}
               >
                 {isLoading ? 'Saving...' : 'Save as Draft'}
               </Button>
               <Button 
                 className="bg-purple-500 text-white hover:bg-purple-600"
                 onClick={() => handleSubmit(false)}
-                disabled={isLoading}
+                disabled={isLoading || uploadsInProgress > 0}
               >
                 {isLoading ? 'Publishing...' : 'Publish Course'}
               </Button>

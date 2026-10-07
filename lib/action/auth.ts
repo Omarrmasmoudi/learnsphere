@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import prisma from '@/lib/prisma'
 import { roleFrom } from '@/lib/auth/roles'
@@ -9,8 +10,11 @@ export async function getSessionUserId(): Promise<number | null> {
   return verifySession(cookieStore.get(SESSION_COOKIE)?.value)
 }
 
-/** The signed-in user with their role, or null if there is no valid session. */
-export async function getCurrentUser() {
+/**
+ * The signed-in user with their role, or null if there is no valid session.
+ * Cached per request, so a layout and page can both call it for one query.
+ */
+export const getCurrentUser = cache(async () => {
   const userId = await getSessionUserId()
   if (!userId) return null
 
@@ -28,4 +32,4 @@ export async function getCurrentUser() {
 
   const { teacher: _teacher, admin: _admin, ...profile } = user
   return { ...profile, role: roleFrom(user) }
-}
+})
