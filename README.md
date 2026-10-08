@@ -8,6 +8,7 @@ LearnSphere is a modern, full-stack E-learning platform designed to empower educ
 - **Teacher Dashboard:** Comprehensive tools for instructors to create, manage, and edit course content.
 - **Interactive Course Player:** Structured learning with sections and high-quality video integration.
 - **Secure Authentication:** Custom JWT-based authentication system ensuring user data privacy.
+- **Sentiment-Analyzed Course Feedback:** Students write or record feedback in any of six languages; Whisper transcribes it and a multilingual BERT model scores it 1–5, giving teachers a sentiment breakdown per course.
 - **Seamless Media Management:** Integrated with UploadThing for fast and reliable image/video uploads.
 - **Responsive Design:** A polished, mobile-first UI built with Tailwind CSS and Radix UI (Shadcn UI).
 
@@ -54,6 +55,15 @@ LearnSphere is a modern, full-stack E-learning platform designed to empower educ
    npm run dev
    ```
 
+5. **Start the sentiment service** (for course feedback; Python 3.10+):
+   ```bash
+   cd sentiment-service
+   python -m venv .venv && .venv/Scripts/activate   # or: source .venv/bin/activate
+   pip install -r requirements.txt
+   uvicorn main:app --host 127.0.0.1 --port 8000
+   ```
+   See [`sentiment-service/README.md`](sentiment-service/README.md) for details.
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## 🏗️ Project Structure
@@ -63,6 +73,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `lib/`: Core logic, server actions, and shared utilities.
 - `prisma/`: Database schema and migrations.
 - `hooks/`: Custom React hooks for shared logic.
+- `sentiment-service/`: Python FastAPI service for speech-to-text and sentiment scoring.
 
 ## 🛡️ Security & Performance
 
